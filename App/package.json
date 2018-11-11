@@ -1,0 +1,36 @@
+{
+  "name": "mysosgame",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^4.1.3",
+    "firebase": "^5.5.8",
+    "prop-types": "^15.6.2",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^2.1.1",
+    "reactstrap": "^6.5.0",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "sass": "^1.14.0",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.83.0"
+  },
+  "scripts": {
+    "sass:build": "sass --update src/_Templates/default/styles/scss/theme.scss:src/_Templates/default/styles/css/theme.min.css --style compressed",
+    "sass:watch": "sass --watch src/_Templates/default/styles/scss/theme.scss:src/_Templates/default/styles/css/theme.min.css --style compressed",
+    "start": "start npm run sass:watch & react-scripts start",
+    "build": "start npm run sass:build & react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

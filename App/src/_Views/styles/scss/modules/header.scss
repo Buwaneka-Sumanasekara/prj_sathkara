@@ -1,0 +1,43 @@
+.site_header{
+    .navbar{
+        padding: 0ch;
+    }
+    background-color: $light_header;
+    .navbar-dark .navbar-nav .nav-link{
+        color: white;
+    }
+    .navbar-dark .navbar-nav .nav-item .input-group input {
+        border-color: $primary;
+        border-right-color:white; 
+    }
+    .navbar-dark .navbar-nav .nav-item .input-group .input-group-append button {
+        border: $primary 1px solid;
+        border-left-color:white; 
+    }
+    .navbar-dark .navbar-nav .nav-item .btn_special {
+        background-color: $primary_light;
+        border: $primary 1px solid;
+        margin-left: 8pt;
+    }
+    .App-logo {
+        width: 100pt;
+    }
+}
+.subheader{
+    .navbar{
+        padding: 0ch;
+    }
+    background-color: #f9f9f9;
+    .subheader_title{
+        color: #c6a931;
+        font-family: 'pacificoregular',Arial, Helvetica, sans-serif;
+        font-size: 10pt;
+    }
+    .Nav_links .nav-item .nav-link{
+        color:$header_nav_item_color;
+        text-align: end;
+    }
+    .Nav_links .nav-item .nav-link:hover{
+        color:$header_nav_item_color;
+    }
+}
