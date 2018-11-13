@@ -10,17 +10,16 @@ import {
 
 const Routes = () => (
   <BrowserRouter>
-
     <Switch>
-    <Route exact path='/Auth' component={Login} />
+      <Route exact path='/Auth' component={Login} />
       <Route exact path='/Auth/:screen' component={Login} />
       <App>
-        <Route exact path='/' component={Dashboard} />
-        <Route path='/:page' component={Test} />
+        <Switch>
+          <Route exact path='/' component={Dashboard} />
+          <Route path='/:page' component={Test} />
+        </Switch>
       </App>
     </Switch>
-
-
   </BrowserRouter>
 )
 

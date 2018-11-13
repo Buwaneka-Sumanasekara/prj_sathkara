@@ -2,15 +2,19 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { Container, Row, Col } from 'reactstrap';
-import { Image, Label, Button, Checkbox, Form, Segment, Message } from 'semantic-ui-react';
+import { Image, Label, Button, Dimmer, Loader, Form, Segment, Message } from 'semantic-ui-react';
 import imgLogo from '../../styles/img/logo.jpg';
-import * as fireb from '../../../constants/firebase';
 
 const SCREEN_LOGIN = 'Login';
 const SCREEN_REGISTER = 'Register';
 const SCREEN_VERIFY = 'Verify';
 
-class TestViewContainer extends Component {
+const MSG_SIGNUP_SUCCESS = 'SIGNUP_S';
+const MSG_SIGNUP_ERROR = 'SIGNUP';
+const MSG_LOGIN_SUCCESS = 'LOGIN_S';
+const MSG_LOGIN_ERROR = 'LOGIN';
+
+class LognViewContainer extends Component {
 
   static contextTypes = {
     router: PropTypes.object,
@@ -22,44 +26,185 @@ class TestViewContainer extends Component {
     this.state = {
       screen: SCREEN_LOGIN,
       alertVisible: true,
-      reg_fname:'',
-      reg_lname:'',
-      reg_mobile:'',
+      error: '',
+      error_type: '',
+      reg_fname: '',
+      reg_lname: '',
+      reg_mobile: '',
+      reg_email: "",
+      reg_pass: "",
+      reg_cpass: "",
+      login_email: "",
+      login_pass: ""
     }
   }
 
   componentDidMount = async () => {
-    console.log(`screen:${this.props.match.params.screen}`)
-    if (this.props.match.params.screen === undefined) {
-      this.changeScreen(SCREEN_LOGIN);
-    } else {
-      this.changeScreen(this.props.match.params.screen);
-    }
+    console.log(`screen:${this.props.match.params.screen}`);
+     await this.props.authCheck();
+
+   
 
   }
 
 
   shouldComponentUpdate(nextProps, nextState) {
+    if(this.props.authLoading===true && nextProps.authLoading===false ){
+      if(nextProps.isAuthenticated===false){
+        if (this.props.match.params.screen === undefined) {
+          this.changeScreen(SCREEN_LOGIN);
+        } else {
+          this.changeScreen(this.props.match.params.screen);
+        }
+      }else{
+        this.redirectToHome();
+      }
+      
+    }
+    else if (this.props.message.msg_type !== nextProps.message.msg_type) {
+      this._setMessage(nextProps.message.msg_type, nextProps.message.msg_txt, 3000);
+    }
     return true;
   }
 
 
-  handleRegister = () => {
-    const appVerifier = fireb.auth.RecaptchaVerifier(
-      "recaptcha-container"
-    );
-  }
 
-  onchangetext = (para, value) => {
-    switch (para){
-       case 'reg_fname':this.setState({reg_fname:value});
-       case 'reg_lname':this.setState({reg_lname:value});
-       case 'reg_mobile':this.setState({reg_mobile:value});
-       default:break;
+
+  /*ERROR HANDLING*/
+
+  _setMessage(methodtype, msg, time) {
+    //console.log(`error set:${methodtype},${msg}`)
+    if (methodtype === MSG_LOGIN_SUCCESS) {
+      this.redirectToHome();
+    } else {
+      this.setState({ error_type: methodtype, error: msg });
+      if (time === undefined) {
+        setTimeout(() => {
+          this.setState({ error_type: '', error: '' })
+        }, 2000)
+      } else {
+        setTimeout(() => {
+          this.setState({ error_type: '', error: '' })
+        }, time)
+      }
+
+      this.clearForm(methodtype);
+      window.scrollTo(0, 0);
+    }
+
+  }
+  /*END:ERROR HANDLING*/
+
+  clearForm = (typ) => {
+    if (typ === MSG_SIGNUP_SUCCESS) {
+      this.setState({
+        reg_fname: '',
+        reg_lname: '',
+        reg_mobile: '',
+        reg_email: "",
+        reg_pass: "",
+        reg_cpass: "",
+      })
     }
   }
 
-  changeScreen = (newscreen) => {
+  redirectToHome = () => {
+    this.context.router.history.push(`/`);
+  }
+
+  validateReg = () => {
+    this.setState({ error_type: '', error: '' });
+    let state = true;
+    let msg = "";
+
+    if (this.state.reg_fname === '') {
+      state = false;
+      msg = 'Please enter your first name';
+    } else if (this.state.reg_lname === '') {
+      state = false;
+      msg = 'Please enter your Last name';
+    } else if (this.state.reg_mobile === '') {
+      state = false;
+      msg = 'Please enter your mobile no';
+    } else if (this.state.reg_email === '') {
+      state = false;
+      msg = 'Please enter your email';
+    } else if (this.state.reg_pass === '') {
+      state = false;
+      msg = 'Please enter your password';
+    } else if (this.state.reg_pass !== this.state.reg_cpass) {
+      state = false;
+      msg = 'passwords should be matched!';
+    }
+
+    if (state === false) {
+      this._setMessage(MSG_SIGNUP_ERROR, msg, 3000);
+    }
+    return state;
+  }
+  handleRegister = async () => {
+    if (this.validateReg()) {
+      let user = {};
+      user['fname'] = this.state.reg_fname;
+      user['lname'] = this.state.reg_lname;
+      user['mobile'] = this.state.reg_mobile;
+      user['email'] = this.state.reg_email;
+      user['pass'] = this.state.reg_pass;
+      await this.props.registerUser(user);
+    }
+  }
+
+  validateLogin = () => {
+    this.setState({ error_type: '', error: '' });
+    let state = true;
+    let msg = "";
+
+    if (this.state.login_email === '') {
+      state = false;
+      msg = 'Please enter your email';
+    } else if (this.state.login_pass === '') {
+      state = false;
+      msg = 'Please enter your password';
+    }
+
+    if (state === false) {
+      this._setMessage(MSG_LOGIN_ERROR, msg, 3000);
+    }
+    return state;
+  }
+  handleLogin = async () => {
+    if (this.validateLogin()) {
+      let user = {};
+      user['email'] = this.state.login_email;
+      user['pass'] = this.state.login_pass;
+      await this.props.loginUser(user);
+    }
+  }
+
+  onchangetext = (para, value) => {
+    if (para === 'reg_fname') {
+      this.setState({ reg_fname: value });
+    } else if (para === 'reg_lname') {
+      this.setState({ reg_lname: value });
+    } else if (para === 'reg_mobile') {
+      this.setState({ reg_mobile: value });
+    } else if (para === 'reg_email') {
+      this.setState({ reg_email: value });
+    } else if (para === 'reg_pass') {
+      this.setState({ reg_pass: value });
+    } else if (para === 'reg_cpass') {
+      this.setState({ reg_cpass: value });
+    }
+  }
+  onchangetext_login = (para, value) => {
+    if (para === 'login_email') {
+      this.setState({ login_email: value });
+    } else if (para === 'login_pass') {
+      this.setState({ login_pass: value });
+    }
+  }
+
+  changeScreen = async (newscreen) => {
 
     this.setState({
       screen: newscreen
@@ -67,16 +212,37 @@ class TestViewContainer extends Component {
       this.context.router.history.push(`/Auth/${newscreen}`);
     });
 
+
   }
 
-  handleAlertDismiss = () => {
-    this.setState({ alertVisible: false })
-  }
+
 
   /*RENDER FUNCTIONS*/
   render = () => {
+    if (this.props.authLoading) {
+      return (
+        <Container>
+          <Row>
+            <Col sm={12}>
+              <Segment>
+
+                <br />
+
+                <Dimmer active inverted>
+                  <Loader size='large'>Loading</Loader>
+                </Dimmer>
+
+                <br />
+              </Segment>
+            </Col>
+          </Row>
+        </Container>
+      );
+    }
+
     return (
       <Container>
+
         <Row>
           <Col md={{ size: 6, offset: 3 }}>
             <Row>
@@ -85,45 +251,52 @@ class TestViewContainer extends Component {
               </Col>
             </Row>
 
-
           </Col>
         </Row>
-        {(this.state.screen === SCREEN_REGISTER && this.state.alertVisible) && (
-          <Row>
-            <Col md={{ size: 8, offset: 2 }}>
-              <Message info
-               
-                onDismiss={()=>this.handleAlertDismiss()}
-                header='අවදානයට'
-                content="ඔබගේ පහසුව උදෙසා ඔබගේ ජංගම දුරකථන අංකය හරහා ඇප් එකට අතුලු වීමට අවස්තාව සලසා ඇති බැවින් ඔබ නිතර භාවිත කරන අංකයක් මේ සදහා යොදන ලෙස කාරුනිකව ඉල්ලා සිටිමු " />
 
-            </Col>
-          </Row>
-        )}
         <Row>
 
-          <Col md={{ size: 4, offset: 4 }}>
-            {this.state.screen === SCREEN_LOGIN && (
-              this.renderLogin()
-            )}
-            {this.state.screen === SCREEN_REGISTER && (
-              this.renderSignup()
-            )}
 
-          </Col>
+          {this.state.screen === SCREEN_LOGIN && (
+            this.renderLogin()
+          )}
+          {this.state.screen === SCREEN_REGISTER && (
+            this.renderSignup()
+          )}
+
+
         </Row>
       </Container>
     );
   };
 
   renderLogin = () => {
+    let showError = (this.state.error_type === MSG_LOGIN_ERROR && this.state.error !== '');
+    let showSuccess = (this.state.error_type === MSG_LOGIN_SUCCESS && this.state.error !== '');
     return (
-      <Form>
-        <Form.Field>
-          <label>Mobile No</label>
-          <input placeholder='+94770000000' />
-        </Form.Field>
-        <Button color='blue'>Login</Button>
+      <Col md={{ size: 4, offset: 4 }}>
+        <Message
+          hidden={!showError}
+          error
+          content={this.state.error}
+        />
+        <Message
+          hidden={!showSuccess}
+          positive
+          content={this.state.error}
+        />
+        <Form loading={this.props.isLoading} onSubmit={() => this.handleLogin()}>
+
+          <Form.Field>
+            <label>Email</label>
+            <input type="email" placeholder='abc@example.com' value={this.state.login_email} onChange={(evt) => this.onchangetext_login('login_email', evt.target.value)} />
+          </Form.Field>
+          <Form.Field>
+            <label>Password</label>
+            <input type="password" value={this.state.login_pass} onChange={(evt) => this.onchangetext_login('login_pass', evt.target.value)} />
+          </Form.Field>
+          <Button color='blue'>Login</Button>
+        </Form>
         <Segment vertical></Segment>
         <br />
         <Button.Group>
@@ -131,35 +304,75 @@ class TestViewContainer extends Component {
           <Button.Or text='->' />
           <Button color='teal' onClick={() => this.changeScreen(SCREEN_REGISTER)}>Sign up here</Button>
         </Button.Group>
-      </Form>
+
+      </Col>
     );
   }
 
   renderSignup = () => {
-    return (
-      <Form>
-        <Form.Field>
-          <label>First Name</label>
-          <input placeholder='First Name' value={this.state.reg_fname} onChange={(data,evt)=>this.onchangetext('reg_fname',data.value)}/>
-        </Form.Field>
-        <Form.Field>
-          <label>Last Name</label>
-          <input placeholder='Last Name' value={this.state.reg_lname} onChange={(data,evt)=>this.onchangetext('reg_lname',data.value)}/>
-        
-        </Form.Field>
-        <Form.Field>
-          <label>Mobile No</label>
-          <input placeholder='+94770000000' />
-        </Form.Field>
-        <div className='recaptcha-container'>
+    let showError = (this.state.error_type === MSG_SIGNUP_ERROR && this.state.error !== '');
+    let showSuccess = (this.state.error_type === MSG_SIGNUP_SUCCESS && this.state.error !== '');
 
-        </div>
-        <Button type='submit' positive onClick={()=>this.handleRegister()}>Register</Button>
-        <Segment vertical></Segment>
-        <br />
-        <Label>If your already registered ?
+    return (
+      <Col md={{ size: 6, offset: 3 }}>
+        <Message
+          hidden={!showError}
+          error
+          content={this.state.error}
+        />
+        <Message
+          hidden={!showSuccess}
+          positive
+          content={this.state.error}
+        />
+        <Form loading={this.props.isLoading} onSubmit={() => this.handleRegister()}>
+          <Row>
+            <Col sm={12} md={6}>
+              <Form.Field>
+                <label>First Name</label>
+                <input placeholder='First Name' value={this.state.reg_fname} onChange={(evt) => this.onchangetext('reg_fname', evt.target.value)} />
+              </Form.Field>
+              <Form.Field>
+                <label>Last Name</label>
+                <input placeholder='Last Name' value={this.state.reg_lname} onChange={(evt) => this.onchangetext('reg_lname', evt.target.value)} />
+              </Form.Field>
+              <Form.Field>
+                <label>Mobile No</label>
+                <input placeholder='+94770000000' value={this.state.reg_mobile} onChange={(evt) => this.onchangetext('reg_mobile', evt.target.value)} />
+              </Form.Field>
+
+            </Col>
+            <Col sm={12} md={6}>
+              <Form.Field>
+                <label>Email</label>
+                <input placeholder='abc@example.com' value={this.state.reg_email} onChange={(evt) => this.onchangetext('reg_email', evt.target.value)} />
+              </Form.Field>
+              <Form.Field>
+                <label>Password</label>
+                <input type='password' value={this.state.reg_pass} onChange={(evt) => this.onchangetext('reg_pass', evt.target.value)} />
+              </Form.Field>
+              <Form.Field>
+                <label>Confirm Password</label>
+                <input type='password' value={this.state.reg_cpass} onChange={(evt) => this.onchangetext('reg_cpass', evt.target.value)} />
+              </Form.Field>
+            </Col>
+          </Row><br />
+          <Row>
+            <Col sm={12}>
+              <Button type='submit' positive >Register</Button>
+            </Col>
+          </Row>
+
+        </Form>
+        <Row>
+          <Col sm={12}>
+            <Segment vertical></Segment>
+            <br />
+            <Label>If your already registered ?
         <Button onClick={() => this.changeScreen(SCREEN_LOGIN)}> Sign-in here</Button> </Label>
-      </Form>
+          </Col>
+        </Row>
+      </Col>
     );
   }
 
@@ -169,4 +382,4 @@ class TestViewContainer extends Component {
 
 
 /* Export Component ==================================================================== */
-export default TestViewContainer;
+export default LognViewContainer;
