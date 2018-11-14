@@ -3,17 +3,21 @@ import { connect } from 'react-redux';
 import '../styles/css/theme.min.css';
 import PropTypes from "prop-types";
 import { Container, Row, Col } from 'reactstrap';
-import { Dimmer, Loader, Image, Segment,Menu } from 'semantic-ui-react';
+import { Dimmer, Loader, Image, Segment, Menu, Button, Modal } from 'semantic-ui-react';
 //Actions
 import * as authActions from '../../redux/auth/action';
 
+
+
+let SCREEN_LOGOUT = 'Logout';
+
 class App extends Component {
 
-  
+
   constructor(props) {
     super();
     this.state = {
-      activeItem:""
+      activeItem: "",
     }
   }
 
@@ -28,22 +32,22 @@ class App extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
 
-      if (this.props.authLoading===true && nextProps.authLoading === false) {
-        if(nextProps.isAuthenticated===false){
-          this.context.router.history.push(`/Auth/Login`);
-        }
-       
+    if (this.props.authLoading === true && nextProps.authLoading === false) {
+      if (nextProps.isAuthenticated === false) {
+        this.context.router.history.push(`/Auth/Login`);
       }
-    
+
+    }
+
 
     return true;
   }
 
   handleItemClick = (e, { name }) => {
     this.setState({ activeItem: name });
-    if(name==='logout'){
+    if (name === SCREEN_LOGOUT) {
       this.props.authLogout();
-    }
+    } 
 
   }
 
@@ -84,26 +88,21 @@ class App extends Component {
     const { activeItem } = this.state
     return (
       <Menu secondary>
-        <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick} />
-        <Menu.Item
-          name='messages'
-          active={activeItem === 'messages'}
-          onClick={this.handleItemClick}
-        />
-        <Menu.Item
-          name='friends'
-          active={activeItem === 'friends'}
-          onClick={this.handleItemClick}
-        />
+        <Menu.Item name='සත්කාර'  />
+  
+
         <Menu.Menu position='right'>
           <Menu.Item
-            name='logout'
+            name={SCREEN_LOGOUT}
             onClick={this.handleItemClick}
           />
         </Menu.Menu>
       </Menu>
     )
   }
+
+
+
 
 }
 
@@ -113,7 +112,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = {
   authCheck: authActions.authCheck,
-  authLogout:authActions.authLogout
+  authLogout: authActions.authLogout
 };
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 
