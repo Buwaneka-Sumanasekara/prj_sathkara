@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { Button, Header, Icon, Segment, Statistic, Label } from 'semantic-ui-react';
-
+import NumberFormat from 'react-number-format';
 class DashboardViewContainer extends Component {
 
 
@@ -53,19 +53,19 @@ class DashboardViewContainer extends Component {
                           </Col>
                           <Col sm={12} md={3}>
                             <Statistic color='red' size='small'>
-                              <Statistic.Value>{CurEvent['total-amount']}</Statistic.Value>
+                              <Statistic.Value><NumberFormat value={CurEvent['total-amount']} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Statistic.Value>
                               <Statistic.Label>Target Amount</Statistic.Label>
                             </Statistic>
                           </Col>
                           <Col sm={12} md={3}>
                             <Statistic color='red' size='small'>
-                              <Statistic.Value>{CurEvent['total-expect']}</Statistic.Value>
+                              <Statistic.Value><NumberFormat value={CurEvent['total-expect']} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Statistic.Value>
                               <Statistic.Label>Current Expect</Statistic.Label>
                             </Statistic>
                           </Col>
                           <Col sm={12} md={3}>
                             <Statistic color='red' size='small'>
-                              <Statistic.Value>{CurEvent['total-recived']}</Statistic.Value>
+                              <Statistic.Value><NumberFormat value={CurEvent['total-recived']} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Statistic.Value>
                               <Statistic.Label>Received</Statistic.Label>
                             </Statistic>
                           </Col>
@@ -105,7 +105,7 @@ class DashboardViewContainer extends Component {
             <Col sm={12} md={4} >
               <Segment textAlign='center'>
               <Statistic color='olive' size='small'>
-                  <Statistic.Value>{100}</Statistic.Value>
+                  <Statistic.Value><NumberFormat value={1000} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Statistic.Value>
                   <Statistic.Label>Your Donations</Statistic.Label>
                 </Statistic>
               </Segment>
