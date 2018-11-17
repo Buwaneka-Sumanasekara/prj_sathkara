@@ -1,5 +1,5 @@
 {
-  "name": "mysosgame",
+  "name": "sathkara",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -20,8 +20,8 @@
     "semantic-ui-react": "^0.83.0"
   },
   "scripts": {
-    "sass:build": "sass --update src/_Templates/default/styles/scss/theme.scss:src/_Templates/default/styles/css/theme.min.css --style compressed",
-    "sass:watch": "sass --watch src/_Templates/default/styles/scss/theme.scss:src/_Templates/default/styles/css/theme.min.css --style compressed",
+    "sass:build": "sass --update src/_Views/styles/scss/theme.scss:src/_Views/styles/css/theme.min.css --style compressed",
+    "sass:watch": "sass --watch src/_Views/styles/scss/theme.scss:src/_Views/styles/css/theme.min.css --style compressed",
     "start": "start npm run sass:watch & react-scripts start",
     "build": "start npm run sass:build & react-scripts build",
     "test": "react-scripts test --env=jsdom",
