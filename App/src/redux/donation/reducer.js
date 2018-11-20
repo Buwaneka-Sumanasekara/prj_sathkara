@@ -1,7 +1,7 @@
 
 export const initialState = {
     isLoading: false,
-    
+    saveError:''
 };
 
 export default function appReducer(state = initialState, action) {
@@ -9,7 +9,8 @@ export default function appReducer(state = initialState, action) {
         case "DONATION_LOADING":
             return {
                 ...state,
-                isLoading: action.isLoading
+                isLoading: action.isLoading,
+                saveError:action.error
             };
        
 

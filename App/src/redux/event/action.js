@@ -1,7 +1,7 @@
 import {  database } from '../../constants/firebase';
 
 export function loadCurrentEvent() {
-   console.log(`called loadCurrentEvent`)
+   
     return async dispatch => {
       let userref = database.ref(`events`);
       userref.orderByChild('active').equalTo(true).on("value", function(snapshot) {
