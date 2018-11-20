@@ -3,8 +3,13 @@ import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { Button, Header, Icon, Segment, Statistic, Label } from 'semantic-ui-react';
 import NumberFormat from 'react-number-format';
-class DashboardViewContainer extends Component {
+import PropTypes from "prop-types";
 
+class DashboardViewContainer extends Component {
+  static contextTypes = {
+    router: PropTypes.object,
+
+  };
 
 
   componentDidMount = async () => {
@@ -15,6 +20,10 @@ class DashboardViewContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
 
     return true;
+  }
+
+  handleDonationPress = () => {
+    this.context.router.history.push(`/donations`);
   }
 
   render = () => {
@@ -91,7 +100,7 @@ class DashboardViewContainer extends Component {
             </Col>
             <Col sm={12} md={4} >
               <Segment textAlign='center'>
-                <Button as='div' labelPosition='right'>
+                <Button as='div' labelPosition='right' onClick={()=>this.handleDonationPress()}>
                   <Button color='red'>
                     <Icon name='heart' />
                     Donate

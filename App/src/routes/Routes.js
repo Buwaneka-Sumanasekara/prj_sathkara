@@ -4,7 +4,8 @@ import {
   Login,
   App,
   Test,
-  Dashboard
+  Dashboard,
+  Donation
 } from '../_Views';
 
 
@@ -16,6 +17,7 @@ const Routes = () => (
       <App>
         <Switch>
           <Route exact path='/' component={Dashboard} />
+          <Route exact path='/donations' component={Donation} />
           <Route path='/:page' component={Test} />
         </Switch>
       </App>
