@@ -18,12 +18,14 @@ const mapStateToProps = state => ({
     uid:state.auth.user.id,
     isLoading_save:state.donation.isLoading,
     saveError:state.donation.saveError,
-    liveEvent:state.event.liveEvent
+    liveEvent:state.event.liveEvent,
+    currentdonations:state.donation.currentdonations
 });
 
 // Any actions to map to the component?
 const mapDispatchToProps = {
-    saveDonation:DonationActions.saveDonation
+    saveDonation:DonationActions.saveDonation,
+    updateSelfDonationsList:DonationActions.updateSelfDonationsList
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DonateView);

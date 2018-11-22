@@ -54,7 +54,8 @@ export default function appReducer(state = initialState, action) {
                 ...state,
                 isAuthenticated: false,
                 user: {},
-                isLoading: false
+                isLoading: false,
+                isAuthChecking:false
             };
 
         default:

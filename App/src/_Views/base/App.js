@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import '../styles/css/theme.min.css';
 import PropTypes from "prop-types";
 import { Container, Row, Col } from 'reactstrap';
-import { Dimmer, Loader, Image, Segment, Menu, Button, Modal } from 'semantic-ui-react';
+import { Dimmer, Loader, Image, Segment, Menu, Icon } from 'semantic-ui-react';
 //Actions
 import * as authActions from '../../redux/auth/action';
 
@@ -47,6 +47,8 @@ class App extends Component {
     this.setState({ activeItem: name });
     if (name === SCREEN_LOGOUT) {
       this.props.authLogout();
+    }else if(name==='Home'){
+      this.context.router.history.push(`/`); 
     } 
 
   }
@@ -87,15 +89,23 @@ class App extends Component {
   _renderMenues = () => {
     const { activeItem } = this.state
     return (
-      <Menu secondary>
-        <Menu.Item name='සත්කාර'  />
-  
+      <Menu secondary  icon='labeled'>
+        <Menu.Item name='සත්කාර' header />
+        <Menu.Item
+            name={"Home"}
+            onClick={this.handleItemClick}
+          >
+          <Icon name='home' />
+          Home
+          </Menu.Item>
 
         <Menu.Menu position='right'>
           <Menu.Item
             name={SCREEN_LOGOUT}
             onClick={this.handleItemClick}
-          />
+          ><Icon name='window close' />
+          Logout
+          </Menu.Item>
         </Menu.Menu>
       </Menu>
     )

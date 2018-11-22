@@ -95,7 +95,7 @@ export function authCheck() {
       if (authUser) {
         setUserToRedux(dispatch, authUser)
       } else {
-        dispatch({ type: 'AUTH_CHECKING', isLoading: false });
+       // dispatch({ type: 'AUTH_CHECKING', isLoading: false });
         dispatch({ type: 'AUTH_FAILD' });
       }
     });

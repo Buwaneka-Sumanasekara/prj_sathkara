@@ -41,12 +41,12 @@ class LognViewContainer extends Component {
 
   componentDidMount = async () => {
     console.log(`screen:${this.props.match.params.screen}`);
-     await this.props.authCheck();
-
-   
-
+     await this.props.authCheck();  
   }
 
+  componentWillUnmount() {
+    this.isCancelled = true;
+}
 
   shouldComponentUpdate(nextProps, nextState) {
     if(this.props.authLoading===true && nextProps.authLoading===false ){

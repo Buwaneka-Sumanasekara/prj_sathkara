@@ -1,10 +1,12 @@
+import { database, storage, firebase } from '../../constants/firebase';
 
-export function addMarks (marks) {
-    return async dispatch => {
-       let marksNew=marks*2;
-       dispatch({
-        type: 'ADD_VALUE',
-        marks: marksNew
-      });
-    }
+
+export function updateAppLiveInfo() {
+  return async dispatch => {
+    let appliveinforef = database.ref(`app-live-info`);
+    appliveinforef.on("value", function (snapshot) {
+       dispatch({ type: 'UPDATE_LIVE_INFO', liveinfo: snapshot.val() });
+
+    });
+  }
 }

@@ -1,7 +1,7 @@
 
 export const initialState = {
     isLoading: false,
-    value: 0
+    liveinfo:{}
 };
 
 export default function appReducer(state = initialState, action) {
@@ -11,10 +11,10 @@ export default function appReducer(state = initialState, action) {
                 ...state,
                 isLoading: action.isLoading
             };
-        case "ADD_VALUE":
+        case "UPDATE_LIVE_INFO":
             return {
                 ...state,
-                value: action.marks
+                liveinfo: action.liveinfo
             };
 
         default:

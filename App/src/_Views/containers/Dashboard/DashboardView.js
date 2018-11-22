@@ -13,7 +13,9 @@ class DashboardViewContainer extends Component {
 
 
   componentDidMount = async () => {
-    this.props.loadCurrentEvent();
+    await this.props.loadCurrentEvent();
+    this.props.updateAppLiveInfo();
+    this.props.updateSelfDonations(this.props.liveEvent.id,this.props.uid);
   }
 
 
@@ -25,6 +27,8 @@ class DashboardViewContainer extends Component {
   handleDonationPress = () => {
     this.context.router.history.push(`/donations`);
   }
+
+
 
   render = () => {
     let CurEvent = this.props.liveEvent;
@@ -93,7 +97,7 @@ class DashboardViewContainer extends Component {
             <Col sm={12} md={4} >
               <Segment textAlign='center'>
                 <Statistic color='orange' size='small'>
-                  <Statistic.Value>{100}</Statistic.Value>
+                  <Statistic.Value>{this.props.liveinfo['users-all']}</Statistic.Value>
                   <Statistic.Label>Members</Statistic.Label>
                 </Statistic>
               </Segment>
@@ -114,7 +118,7 @@ class DashboardViewContainer extends Component {
             <Col sm={12} md={4} >
               <Segment textAlign='center'>
               <Statistic color='olive' size='small'>
-                  <Statistic.Value><NumberFormat value={1000} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Statistic.Value>
+                  <Statistic.Value><NumberFormat value={this.props.currentdonation} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Statistic.Value>
                   <Statistic.Label>Your Donations</Statistic.Label>
                 </Statistic>
               </Segment>

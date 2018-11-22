@@ -20,7 +20,7 @@ const mapStateToProps = state => ({
 
 // Any actions to map to the component?
 const mapDispatchToProps = {
-   multiplyValue:AppActions.addMarks
+  
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TestView);

@@ -1,7 +1,9 @@
 
 export const initialState = {
     isLoading: false,
-    saveError:''
+    saveError: '',
+    currentdonation: 0,
+    currentdonations:[]
 };
 
 export default function appReducer(state = initialState, action) {
@@ -10,9 +12,19 @@ export default function appReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: action.isLoading,
-                saveError:action.error
+                saveError: action.error
             };
-       
+        case "DONATION_UPDATE_USER_TOTAL":
+            return {
+                ...state,
+                currentdonation:action.currentdonation
+            };
+            case "DONATION_UPDATE_USER_DON":
+            return {
+                ...state,
+                currentdonations:action.currentdonations
+            };
+
 
         default:
             return state;

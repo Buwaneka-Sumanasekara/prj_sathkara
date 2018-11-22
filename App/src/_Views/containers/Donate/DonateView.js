@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import { Tab, Button, Form, Message, List, Image, Label, Divider } from 'semantic-ui-react';
+import { Tab, Button, Form, Message, List, Image, Table, Icon, Divider, Header } from 'semantic-ui-react';
 import NumberFormat from 'react-number-format';
 import BOCLogo from '../../styles/img/boc.jpg';
 import bankIcon from '../../styles/img/bankicon.jpg';
@@ -23,7 +23,7 @@ class DonateViewContainer extends Component {
   }
 
   componentDidMount = async () => {
-
+    this.props.updateSelfDonationsList(this.props.liveEvent.id, this.props.uid);
 
   }
 
@@ -31,9 +31,9 @@ class DonateViewContainer extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props.isLoading_save === true && nextProps.isLoading_save === false) {
       if (nextProps.saveError !== '') {
-        this._setMessage(MSG_CREATE_ERROR, nextProps.saveError, 3000);
-      }else{
-        this._setMessage(MSG_CREATE_SUCCESS, nextProps.saveError, 3000);
+        this._setMessage(MSG_CREATE_ERROR, nextProps.saveError, 4000);
+      } else {
+        this._setMessage(MSG_CREATE_SUCCESS, 'Success', 4000);
       }
     }
     return true;
@@ -53,7 +53,10 @@ class DonateViewContainer extends Component {
       }, time)
     }
 
-    this.clearForm(methodtype);
+    if (methodtype === MSG_CREATE_SUCCESS) {
+      this.clearForm(methodtype);
+    }
+
     window.scrollTo(0, 0);
 
 
@@ -64,19 +67,26 @@ class DonateViewContainer extends Component {
   }
 
   makeDonation = () => {
-    if(this.state.donation_save_amount > 0){
-      let obj = {};
-      obj['eventid'] = this.props.liveEvent.id;
-      obj['uid'] = this.props.uid;
-      obj['amt'] = this.state.donation_save_amount;
-      obj['img'] = this.state.donation_save_file;
-  
-      console.log(this.state.donation_save_file)
-      this.props.saveDonation(obj);
-    }else{
-      this._setMessage(MSG_CREATE_ERROR,'Please Enter your Amount',3000);
+
+    if (this.state.donation_save_amount > 0) {
+      if (this.state.donation_save_file !== null) {
+        let obj = {};
+        obj['eventid'] = this.props.liveEvent.id;
+        obj['uid'] = this.props.uid;
+        obj['amt'] = this.state.donation_save_amount;
+        obj['img'] = this.state.donation_save_file;
+
+        console.log(this.state.donation_save_file)
+        this.props.saveDonation(obj);
+      } else {
+        this._setMessage(MSG_CREATE_ERROR, 'Please Upload your Bank slip / Payment Recipt', 3000);
+      }
+    } else {
+      this._setMessage(MSG_CREATE_ERROR, 'Please Enter your Amount', 3000);
     }
-  
+
+
+
   }
 
   handleselectedFile = event => {
@@ -93,8 +103,7 @@ class DonateViewContainer extends Component {
 
     const panes = [
       { menuItem: 'Make Donation', render: () => this.renderDonation() },
-      { menuItem: 'Pending', render: () => this.renderPendingDonation() },
-      { menuItem: 'Approved', render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane> }
+      { menuItem: 'History', render: () => this.renderPendingDonation() }
     ]
 
     return (
@@ -113,7 +122,65 @@ class DonateViewContainer extends Component {
   renderPendingDonation = () => {
     return (
       <Tab.Pane attached={false}>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Date</Table.HeaderCell>
+              <Table.HeaderCell>Payment</Table.HeaderCell>
+              <Table.HeaderCell>Statues</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {this.props.currentdonations.length === 0 && (
+              <Row>
+                <Col md={{ size: 8, offset: 2 }}>
+                  <br />
+                  <Header as='h2'>
+                    <Icon.Group size='large'>
+                      <Icon name='meh outline' />
 
+                    </Icon.Group>
+                    No Payment Records Found!
+                 </Header>
+                 <br />
+                </Col>
+              </Row>
+
+            )}
+
+            {this.props.currentdonations.map(function (don, i) {
+              let date1 = new Date(don.crdate);
+              return (
+                <Table.Row key={`his${i}`}>
+                  <Table.Cell>{date1.toLocaleString()}</Table.Cell>
+                  <Table.Cell><NumberFormat value={don.amount} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Table.Cell>
+                  {(don['donation-state'] === 0) && (
+                    <Table.Cell warning>
+                      <Icon name='warning sign' />
+                      Not Verified
+                    </Table.Cell>
+                  )}
+                  {(don['donation-state'] === 1) && (
+                    <Table.Cell positive>
+                      <Icon name='checkmark' />
+                      Approved
+                    </Table.Cell>
+                  )}
+                  {(don['donation-state'] === 2) && (
+                    <Table.Cell negative>
+                      <Icon name='close' />
+                      Cancelled
+                    </Table.Cell>
+                  )}
+
+                </Table.Row>
+              );
+            })}
+
+          </Table.Body>
+
+
+        </Table>
       </Tab.Pane>
     );
   }
@@ -121,19 +188,20 @@ class DonateViewContainer extends Component {
   renderDonation = () => {
     let showError = (this.state.error_type === MSG_CREATE_ERROR && this.state.error !== '');
     let showSuccess = (this.state.error_type === MSG_CREATE_SUCCESS && this.state.error !== '');
-
+    console.log(showSuccess)
     return (
       <Tab.Pane attached={false}>
         <Message
           hidden={!showError}
           error
-          content={this.state.error}
+          content={<div><Icon name='close' size='large' />{this.state.error}</div>}
         />
         <Message
+          success
           hidden={!showSuccess}
-          positive
-          content={this.state.error}
+          content={<div><Icon name='thumbs up outline' size='large' />{'Thank you for your contribution.We`ll let you know once your payment verifed'}</div>}
         />
+
 
         <Form loading={this.props.isLoading_save} onSubmit={() => this.makeDonation()}>
           <Message
@@ -191,6 +259,7 @@ class DonateViewContainer extends Component {
       </Tab.Pane>
     );
   }
+
 
 
 

@@ -1,5 +1,5 @@
 import { database, storage,firebase } from '../../constants/firebase';
-
+var _ = require('lodash');
 
 function getDonationImgId() {
   function s4() {
@@ -14,7 +14,8 @@ function getDonationObj(obj) {
   let objnw = {};
   objnw['eventid'] = obj.eventid;
   objnw['uid'] = obj.uid;
-  objnw['amount'] = obj.amt;
+  objnw['amount'] = parseFloat(obj.amt);
+  objnw['donation-state'] = 0; //0=pending,1=aproved,2=cancelled
   objnw['crdate']=firebase.database.ServerValue.TIMESTAMP;
 
   if (obj.id !== undefined) {
@@ -114,5 +115,39 @@ export function saveDonation(obj) {
       dispatch({ type: 'DONATION_LOADING', error:error.message, isLoading: false });
     }
    
+  }
+}
+
+
+export function updateSelfDonations (eventid,uid)  {
+  return async dispatch => {
+    let userref = database.ref(`donations/${eventid}/${uid}`);
+    userref.on("value", function(donations) {
+      let amount=0;
+      let ar=_.toArray(donations.val())
+      console.log(ar);
+      for (let don of ar) {
+         if(don['donation-state']!==2){//not cancelled
+          amount+=don.amount;
+         }
+      }
+      dispatch({ type: 'DONATION_UPDATE_USER_TOTAL', currentdonation:amount });
+
+   });
+    
+  }
+}
+
+export function updateSelfDonationsList (eventid,uid)  {
+  return async dispatch => {
+    let userref = database.ref(`donations/${eventid}/${uid}`);
+    userref.on("value", function(donations) {
+      let amount=0;
+      let ar=_.toArray(donations.val())
+      
+      dispatch({ type: 'DONATION_UPDATE_USER_DON', currentdonations:ar });
+
+   });
+    
   }
 }
