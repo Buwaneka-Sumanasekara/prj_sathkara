@@ -21,7 +21,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
    registerUser:authActions.registerUser,
    loginUser:authActions.loginUser,
-   authCheck: authActions.authCheck
+   authCheck: authActions.authCheck,
+   signInWithGoogle:authActions.signInWithGoogle
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginView);

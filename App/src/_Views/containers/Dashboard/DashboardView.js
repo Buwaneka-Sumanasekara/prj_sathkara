@@ -1,9 +1,10 @@
 
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import { Button, Header, Icon, Segment, Statistic, Label } from 'semantic-ui-react';
+import { Button, Header, Icon, Segment, Statistic, Label,Image } from 'semantic-ui-react';
 import NumberFormat from 'react-number-format';
 import PropTypes from "prop-types";
+
 
 class DashboardViewContainer extends Component {
   static contextTypes = {
@@ -45,7 +46,7 @@ class DashboardViewContainer extends Component {
                       {`${CurEvent.place}`}
                     </Col>
                     <Col sm={12} md={6}>
-                      <Icon name='like' color='red' />
+                      <Image src={CurEvent['img-header']} size='small' centered/>
                       {`${CurEvent.name}`}
                     </Col>
                     <Col sm={12} md={3}>

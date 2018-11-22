@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import { Container, Row, Col } from 'reactstrap';
-import { Image, Label, Button, Dimmer, Loader, Form, Segment, Message } from 'semantic-ui-react';
+import { Image, Label, Button, Dimmer, Loader, Form, Segment, Message, Icon, Header } from 'semantic-ui-react';
 import imgLogo from '../../styles/img/logo.jpg';
 
 const SCREEN_LOGIN = 'Login';
@@ -13,6 +13,8 @@ const MSG_SIGNUP_SUCCESS = 'SIGNUP_S';
 const MSG_SIGNUP_ERROR = 'SIGNUP';
 const MSG_LOGIN_SUCCESS = 'LOGIN_S';
 const MSG_LOGIN_ERROR = 'LOGIN';
+
+const PROVIDER_GOOGLE = "Google-SignIn";
 
 class LognViewContainer extends Component {
 
@@ -41,25 +43,26 @@ class LognViewContainer extends Component {
 
   componentDidMount = async () => {
     console.log(`screen:${this.props.match.params.screen}`);
-     await this.props.authCheck();  
+    await this.props.authCheck();
   }
 
   componentWillUnmount() {
     this.isCancelled = true;
-}
+  }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if(this.props.authLoading===true && nextProps.authLoading===false ){
-      if(nextProps.isAuthenticated===false){
+    if (this.props.authLoading === true && nextProps.authLoading === false) {
+      console.log(`Auth statues:${nextProps.isAuthenticated}`)
+      if (nextProps.isAuthenticated === false) {
         if (this.props.match.params.screen === undefined) {
           this.changeScreen(SCREEN_LOGIN);
         } else {
           this.changeScreen(this.props.match.params.screen);
         }
-      }else{
+      } else {
         this.redirectToHome();
       }
-      
+
     }
     else if (this.props.message.msg_type !== nextProps.message.msg_type) {
       this._setMessage(nextProps.message.msg_type, nextProps.message.msg_txt, 3000);
@@ -150,6 +153,9 @@ class LognViewContainer extends Component {
       user['mobile'] = this.state.reg_mobile;
       user['email'] = this.state.reg_email;
       user['pass'] = this.state.reg_pass;
+      user['authtyp'] = 'EMAIL';
+      user['img'] = 'https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Fuser.png?alt=media&token=69817bb3-ac5b-4be8-ab7d-a155bff173c1';
+
       await this.props.registerUser(user);
     }
   }
@@ -172,13 +178,18 @@ class LognViewContainer extends Component {
     }
     return state;
   }
-  handleLogin = async () => {
-    if (this.validateLogin()) {
-      let user = {};
-      user['email'] = this.state.login_email;
-      user['pass'] = this.state.login_pass;
-      await this.props.loginUser(user);
+  handleLogin = async (provider) => {
+    if (provider === '') {
+      if (this.validateLogin()) {
+        let user = {};
+        user['email'] = this.state.login_email;
+        user['pass'] = this.state.login_pass;
+        await this.props.loginUser(user);
+      }
+    } else {
+      this.props.signInWithGoogle();
     }
+
   }
 
   onchangetext = (para, value) => {
@@ -224,9 +235,11 @@ class LognViewContainer extends Component {
         <Container>
           <Row>
             <Col sm={12}>
-              <Segment>
+              <Segment basic>
 
-                <br />
+                 <center>
+                  <Image src={imgLogo}  />
+                  </center><br/>
 
                 <Dimmer active inverted>
                   <Loader size='large'>Loading</Loader>
@@ -285,7 +298,24 @@ class LognViewContainer extends Component {
           positive
           content={this.state.error}
         />
-        <Form loading={this.props.isLoading} onSubmit={() => this.handleLogin()}>
+
+
+        
+          <Segment >
+          <center>
+            <Segment.Inline>
+              <Button color='google plus' onClick={() => this.handleLogin(PROVIDER_GOOGLE)}>
+                <Icon name='google plus g' /> SignIn with Your Google Acount
+          </Button>
+
+
+            </Segment.Inline>
+            
+            </center>
+          </Segment>
+         
+
+<Form loading={this.props.isLoading || this.props.authLoading} onSubmit={() => this.handleLogin('')}>
 
           <Form.Field>
             <label>Email</label>

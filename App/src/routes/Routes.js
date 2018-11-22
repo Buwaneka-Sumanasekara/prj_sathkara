@@ -5,7 +5,8 @@ import {
   App,
   Test,
   Dashboard,
-  Donation
+  Donation,
+  Terms
 } from '../_Views';
 
 
@@ -14,10 +15,12 @@ const Routes = () => (
     <Switch>
       <Route exact path='/Auth' component={Login} />
       <Route exact path='/Auth/:screen' component={Login} />
+      <Route path='/Terms' component={Terms} />
       <App>
         <Switch>
           <Route exact path='/' component={Dashboard} />
           <Route exact path='/donations' component={Donation} />
+          
           <Route path='/:page' component={Test} />
         </Switch>
       </App>

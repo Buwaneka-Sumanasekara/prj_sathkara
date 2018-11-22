@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import '../styles/css/theme.min.css';
 import PropTypes from "prop-types";
-import { Container, Row, Col } from 'reactstrap';
-import { Dimmer, Loader, Image, Segment, Menu, Icon } from 'semantic-ui-react';
+import { Container, Row, Col, Collapse, Nav, Navbar, NavItem, NavLink, NavbarBrand, NavbarToggler } from 'reactstrap';
+import { Dimmer, Loader, Image, Segment, Menu, Icon, Label, Button } from 'semantic-ui-react';
 //Actions
 import * as authActions from '../../redux/auth/action';
-
+import imgLogo from '../styles/img/logo.jpg';
 
 
 let SCREEN_LOGOUT = 'Logout';
@@ -16,8 +16,10 @@ class App extends Component {
 
   constructor(props) {
     super();
+    this.toggle = this.toggle.bind(this);
     this.state = {
       activeItem: "",
+      isOpen: false
     }
   }
 
@@ -43,13 +45,13 @@ class App extends Component {
     return true;
   }
 
-  handleItemClick = (e, { name }) => {
+  handleItemClick = (name) => {
     this.setState({ activeItem: name });
     if (name === SCREEN_LOGOUT) {
       this.props.authLogout();
-    }else if(name==='Home'){
-      this.context.router.history.push(`/`); 
-    } 
+    } else if (name === 'Home') {
+      this.context.router.history.push(`/`);
+    }
 
   }
 
@@ -62,11 +64,14 @@ class App extends Component {
         <Row>
           {this.props.authLoading && (
             <Col sm={12}>
-              <Segment>
+              <Segment basic>
 
-                <br />
+                 <center>
+                  <Image src={imgLogo}  />
+                  </center><br/>
 
                 <Dimmer active inverted>
+                 
                   <Loader size='large'>Loading</Loader>
                 </Dimmer>
 
@@ -86,28 +91,61 @@ class App extends Component {
     );
   }
 
+
+  toggle() {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  }
+
   _renderMenues = () => {
     const { activeItem } = this.state
     return (
-      <Menu secondary  icon='labeled'>
-        <Menu.Item name='සත්කාර' header />
-        <Menu.Item
-            name={"Home"}
-            onClick={this.handleItemClick}
-          >
-          <Icon name='home' />
-          Home
-          </Menu.Item>
+      <Navbar light expand="md">
+        <NavbarBrand onClick={(e) => this.handleItemClick("Home")}><Image src={imgLogo} size='tiny' /></NavbarBrand>
+        <Nav className="ml-auto" navbar>
+          <NavItem onClick={(e) => this.handleItemClick("Home")}>
+            <NavLink >
+              <Label as='a' image color='blue' basic>
+              <Icon
+                    name={"home"}
+                    size='large'
+                    color='blue'
+                  />
+                Home
+                </Label>
+            </NavLink>
+          </NavItem>
 
-        <Menu.Menu position='right'>
-          <Menu.Item
-            name={SCREEN_LOGOUT}
-            onClick={this.handleItemClick}
-          ><Icon name='window close' />
-          Logout
-          </Menu.Item>
-        </Menu.Menu>
-      </Menu>
+        </Nav>
+        <NavbarToggler onClick={this.toggle} />
+        <Collapse isOpen={this.state.isOpen} navbar>
+          <Nav className="ml-auto" navbar>
+            <NavItem>
+              <NavLink >
+                <Label as='a' image color='blue' basic>
+                  <img src={this.props.user.img} />
+                  {`${this.props.user.fname} ${this.props.user.lname}`}
+                </Label>
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink onClick={(e) => this.handleItemClick(SCREEN_LOGOUT)}>
+                <Label as='a' color='blue' basic>
+                  <Icon
+                    name={"close"}
+                    size='large'
+                    color='blue'
+                  />
+                  Logout
+              </Label>
+              </NavLink>
+            </NavItem>
+          </Nav>
+        </Collapse>
+      </Navbar>
+
+
     )
   }
 
@@ -117,6 +155,7 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
+  user: state.auth.user,
   isAuthenticated: state.auth.isAuthenticated,
   authLoading: state.auth.isAuthChecking
 });

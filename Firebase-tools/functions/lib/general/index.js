@@ -52,13 +52,19 @@ exports.calculateExpectRecivedAmounts = functions.database.ref('/donations')
         });
     }
 }));
-exports.updateMembers = functions.database.ref('/users')
+exports.updateMembers = functions.database.ref('/user')
     .onWrite((evt) => __awaiter(this, void 0, void 0, function* () {
-    const users = yield admin.database().ref(`users`).once("value");
-    const usersArray = Object.keys(users.val()).map(i => users.val()[i]);
-    const AppLiveInforef = admin.database().ref(`app-live-info`);
-    yield AppLiveInforef.update({
-        "users-all": usersArray.length
-    });
+    try {
+        const users = yield admin.database().ref(`user`).once("value");
+        const usersArray = Object.keys(users.val()).map(i => users.val()[i]);
+        console.log(`Member updated! Members:${usersArray.length}`);
+        const AppLiveInforef = admin.database().ref(`app-live-info`);
+        yield AppLiveInforef.update({
+            "users-all": usersArray.length
+        });
+    }
+    catch (error) {
+        console.error(`Error in updateMembers ${error}`);
+    }
 }));
 //# sourceMappingURL=index.js.map
