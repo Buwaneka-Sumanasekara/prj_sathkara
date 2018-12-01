@@ -51,6 +51,8 @@ class App extends Component {
       this.props.authLogout();
     } else if (name === 'Home') {
       this.context.router.history.push(`/`);
+    }else if (name === 'Donation') {
+      this.context.router.history.push(`/donations`);
     }
 
   }
@@ -113,6 +115,18 @@ class App extends Component {
                     color='blue'
                   />
                 Home
+                </Label>
+            </NavLink>
+          </NavItem>
+          <NavItem onClick={(e) => this.handleItemClick("Donation")}>
+            <NavLink >
+              <Label  image color='red' basic>
+              <Icon
+                    name={"heartbeat"}
+                    size='large'
+                    color='red'
+                  />
+                Donate Now !
                 </Label>
             </NavLink>
           </NavItem>

@@ -3,7 +3,9 @@ export const initialState = {
     isLoading: false,
     saveError: '',
     currentdonation: 0,
-    currentdonations:[]
+    currentdonations: [],
+    isReciptUploading:false,
+    uploadError:''
 };
 
 export default function appReducer(state = initialState, action) {
@@ -14,15 +16,21 @@ export default function appReducer(state = initialState, action) {
                 isLoading: action.isLoading,
                 saveError: action.error
             };
+        case "DONATION_RECIPT_UPDATING":
+            return {
+                ...state,
+                isReciptUploading: action.isLoading,
+                uploadError:action.error
+            };
         case "DONATION_UPDATE_USER_TOTAL":
             return {
                 ...state,
-                currentdonation:action.currentdonation
+                currentdonation: action.currentdonation
             };
-            case "DONATION_UPDATE_USER_DON":
+        case "DONATION_UPDATE_USER_DON":
             return {
                 ...state,
-                currentdonations:action.currentdonations
+                currentdonations: action.currentdonations
             };
 
 

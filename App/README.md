@@ -1,4 +1,4 @@
-# SATHKARA - APP
+# SATHKARA Team- APP
 
 [![N|Solid](https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb)](https://teamsathkara.org)
 

@@ -237,9 +237,9 @@ class LognViewContainer extends Component {
             <Col sm={12}>
               <Segment basic>
 
-                 <center>
-                  <Image src={imgLogo}  />
-                  </center><br/>
+                <center>
+                  <Image src={imgLogo} />
+                </center><br />
 
                 <Dimmer active inverted>
                   <Loader size='large'>Loading</Loader>
@@ -300,22 +300,22 @@ class LognViewContainer extends Component {
         />
 
 
-        
-          <Segment >
+
+        <Segment >
           <center>
             <Segment.Inline>
               <Button color='google plus' onClick={() => this.handleLogin(PROVIDER_GOOGLE)}>
-                <Icon name='google plus g' /> SignIn with Your Google Acount
+                <Icon name='google plus g' /> Signin with Your Google Acount
           </Button>
 
-
+              <p>OR</p>
             </Segment.Inline>
-            
-            </center>
-          </Segment>
-         
 
-<Form loading={this.props.isLoading || this.props.authLoading} onSubmit={() => this.handleLogin('')}>
+          </center>
+        </Segment>
+
+
+        <Form loading={this.props.isLoading || this.props.authLoading} onSubmit={() => this.handleLogin('')}>
 
           <Form.Field>
             <label>Email</label>
@@ -355,6 +355,16 @@ class LognViewContainer extends Component {
           positive
           content={this.state.error}
         />
+        <Segment>
+          <center>
+            <Button color='google plus' onClick={() => this.handleLogin(PROVIDER_GOOGLE)}>
+              <Icon name='google plus g' /> Signup with Your Google Acount
+          </Button>
+
+            <p>OR</p>
+          </center>
+        </Segment>
+
         <Form loading={this.props.isLoading} onSubmit={() => this.handleRegister()}>
           <Row>
             <Col sm={12} md={6}>

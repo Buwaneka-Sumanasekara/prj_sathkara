@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import DonateView from './DonateView';
 
 //Actions
+import * as eventActions from '../../../redux/event/action';
 import * as DonationActions from '../../../redux/donation/action';
 
 
@@ -19,13 +20,17 @@ const mapStateToProps = state => ({
     isLoading_save:state.donation.isLoading,
     saveError:state.donation.saveError,
     liveEvent:state.event.liveEvent,
-    currentdonations:state.donation.currentdonations
+    currentdonations:state.donation.currentdonations,
+    isReciptUploading:state.donation.isReciptUploading,
+    uploadError:state.donation.uploadError
 });
 
 // Any actions to map to the component?
 const mapDispatchToProps = {
+    loadCurrentEvent:eventActions.loadCurrentEvent,
     saveDonation:DonationActions.saveDonation,
-    updateSelfDonationsList:DonationActions.updateSelfDonationsList
+    updateSelfDonationsList:DonationActions.updateSelfDonationsList,
+    uploadDonationImgOnlyAction:DonationActions.uploadDonationImgOnlyAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DonateView);

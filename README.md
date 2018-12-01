@@ -33,6 +33,13 @@ $ firebase deploy --only functions
 
 # Environment - Production
 For production environments...
+
+Build project
+
+```sh
+$ npm run-script build
+```
+
 Deploy functions only
 
 ```sh
