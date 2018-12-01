@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "sathkara-bb902"
+    "default": "sathkara-bb902",
+    "test": "sathkara-test"
   }
 }

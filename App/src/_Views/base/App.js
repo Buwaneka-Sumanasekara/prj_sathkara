@@ -106,7 +106,7 @@ class App extends Component {
         <Nav className="ml-auto" navbar>
           <NavItem onClick={(e) => this.handleItemClick("Home")}>
             <NavLink >
-              <Label as='a' image color='blue' basic>
+              <Label  image color='blue' basic>
               <Icon
                     name={"home"}
                     size='large'
@@ -123,7 +123,7 @@ class App extends Component {
           <Nav className="ml-auto" navbar>
             <NavItem>
               <NavLink >
-                <Label as='a' image color='blue' basic>
+                <Label  image color='blue' basic>
                   <img src={this.props.user.img} />
                   {`${this.props.user.fname} ${this.props.user.lname}`}
                 </Label>
@@ -131,7 +131,7 @@ class App extends Component {
             </NavItem>
             <NavItem>
               <NavLink onClick={(e) => this.handleItemClick(SCREEN_LOGOUT)}>
-                <Label as='a' color='blue' basic>
+                <Label  color='blue' basic>
                   <Icon
                     name={"close"}
                     size='large'
