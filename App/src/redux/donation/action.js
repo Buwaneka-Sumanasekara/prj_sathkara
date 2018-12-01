@@ -1,5 +1,7 @@
 import { database, storage, firebase } from '../../constants/firebase';
+import { donationApi } from '../../api'
 var _ = require('lodash');
+
 
 function getDonationImgId() {
   function s4() {
@@ -219,16 +221,16 @@ export function uploadDonationImgOnlyAction(obj) {
           // Upload completed successfully, now we can get the download URL
           uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
             console.log('File available at', downloadURL);
-            uploadDonationImgOnly(dispatch,downloadURL,obj);
+            uploadDonationImgOnly(dispatch, downloadURL, obj);
           });
         });
-    }else{
+    } else {
       dispatch({ type: 'DONATION_RECIPT_UPDATING', error: 'Please select your file', isLoading: false });
     }
   }
 }
 
-function uploadDonationImgOnly(dispatch,imgurl,obj) {
+function uploadDonationImgOnly(dispatch, imgurl, obj) {
   console.log(`donations/${obj.eventid}/${obj.uid}/${obj.id}`)
   let donref = database.ref(`donations/${obj.eventid}/${obj.uid}/${obj.id}`);
   let upobj = obj;
@@ -237,10 +239,36 @@ function uploadDonationImgOnly(dispatch,imgurl,obj) {
 
   donref.update(upobj, function (er) {
     if (er) {
-      
+
       dispatch({ type: 'DONATION_RECIPT_UPDATING', error: `Update details faild ${er}`, isLoading: false });
     } else {
       dispatch({ type: 'DONATION_RECIPT_UPDATING', error: '', isLoading: false });
     }
   });
+}
+
+export function LoadAllUsersDonations(eventid) {
+  return async dispatch => {
+    try {
+      dispatch({ type: 'DONATION_ALL_LOADING', isLoading: true });
+      const apiResponse = await donationApi.getAllDonations(eventid);
+      console.log(apiResponse)
+      const respJson = await apiResponse.json();
+      if (apiResponse.status === 200) {
+
+        dispatch({ type: 'DONATION_LOAD_ALL', arPending: respJson.pending_ar, arChanged: respJson.other_ar });
+      } else {
+
+        console.error(`Error:${respJson.msg}`)
+        dispatch({ type: 'DONATION_LOAD_ALL', arPending: respJson.pending_ar, arChanged: respJson.other_ar });
+      }
+
+
+      dispatch({ type: 'DONATION_ALL_LOADING', isLoading: false });
+
+    } catch (error) {
+      console.log(`Error:${error}`)
+      dispatch({ type: 'DONATION_ALL_LOADING', isLoading: false });
+    }
+  }
 }

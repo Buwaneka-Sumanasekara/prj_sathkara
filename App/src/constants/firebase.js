@@ -36,11 +36,12 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const database = firebase.database();
 const storage = firebase.storage();
-
+const WebAPI = `https://${config.authDomain}/api/v1`;
 
 export {
   firebase,
   auth,
   database,
-  storage
+  storage,
+  WebAPI
 };

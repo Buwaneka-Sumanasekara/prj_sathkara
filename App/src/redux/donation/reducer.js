@@ -4,8 +4,11 @@ export const initialState = {
     saveError: '',
     currentdonation: 0,
     currentdonations: [],
-    isReciptUploading:false,
-    uploadError:''
+    isReciptUploading: false,
+    uploadError: '',
+    currentDonations_All_Pending: [],
+    currentDonations_All_changed: [],
+    isAllDonationsLoading: false
 };
 
 export default function appReducer(state = initialState, action) {
@@ -20,7 +23,7 @@ export default function appReducer(state = initialState, action) {
             return {
                 ...state,
                 isReciptUploading: action.isLoading,
-                uploadError:action.error
+                uploadError: action.error
             };
         case "DONATION_UPDATE_USER_TOTAL":
             return {
@@ -31,6 +34,18 @@ export default function appReducer(state = initialState, action) {
             return {
                 ...state,
                 currentdonations: action.currentdonations
+            };
+        case "DONATION_ALL_LOADING":
+            return {
+                ...state,
+                isAllDonationsLoading: action.isLoading,
+
+            };
+        case "DONATION_LOAD_ALL":
+            return {
+                ...state,
+                currentDonations_All_Pending: action.arPending,
+                currentDonations_All_changed: action.arChanged
             };
 
 

@@ -20,7 +20,7 @@ class DonateViewContainer extends Component {
     this.state = {
       error: '',
       error_type: '',
-      donation_id:'',
+      donation_id: '',
       donation_save_file: null,
       donation_save_amount: 0.0,
       donation_update_file: null,
@@ -31,6 +31,10 @@ class DonateViewContainer extends Component {
   componentDidMount = async () => {
     await this.props.loadCurrentEvent();
     this.props.updateSelfDonationsList(this.props.liveEvent.id, this.props.uid);
+    if (this.props.user.user_type === 1) {
+      this.props.LoadAllUsersDonations(this.props.liveEvent.id);
+    }
+
 
   }
 
@@ -69,7 +73,7 @@ class DonateViewContainer extends Component {
 
     if (methodtype === MSG_CREATE_SUCCESS) {
       this.clearForm(methodtype);
-    }else if (methodtype === MSG_UPLOAD_REC_SUCCESS) {
+    } else if (methodtype === MSG_UPLOAD_REC_SUCCESS) {
       this.clearForm(methodtype);
 
     }
@@ -80,7 +84,7 @@ class DonateViewContainer extends Component {
   }
 
   clearForm = () => {
-    this.setState({ donation_save_file: null, donation_save_amount: 0.0,donation_update_file:null,modal_upload_visible:false })
+    this.setState({ donation_save_file: null, donation_save_amount: 0.0, donation_update_file: null, modal_upload_visible: false })
   }
 
   makeDonation = () => {
@@ -107,7 +111,7 @@ class DonateViewContainer extends Component {
     obj['eventid'] = this.props.liveEvent.id;
     obj['uid'] = this.props.uid;
     obj['img'] = this.state.donation_update_file;
-    obj['id']=this.state.donation_id;
+    obj['id'] = this.state.donation_id;
 
     console.log(this.state.donation_update_file)
     this.props.uploadDonationImgOnlyAction(obj);
@@ -127,13 +131,28 @@ class DonateViewContainer extends Component {
   }
 
 
+  updateDonationState = (donid,state) => {
+   
+  }
 
   render = () => {
 
-    const panes = [
+
+    let panes = [
       { menuItem: 'Make Donation', render: () => this.renderDonation() },
       { menuItem: 'History', render: () => this.renderPendingDonation() }
     ]
+
+    if (this.props.user.user_type === 1) {
+      panes = [
+        { menuItem: 'Make Donation', render: () => this.renderDonation() },
+        { menuItem: 'History', render: () => this.renderPendingDonation() },
+        { menuItem: 'Pending', render: () => this.renderAprovesDonation() },
+        { menuItem: 'Approved', render: () => this.renderAlreadyApprovedDonation() }
+
+        
+      ]
+    }
 
     return (
       <Container>
@@ -153,16 +172,16 @@ class DonateViewContainer extends Component {
     let showSuccess = (this.state.error_type === MSG_UPLOAD_REC_SUCCESS && this.state.error !== '');
     return (
       <Tab.Pane attached={false}>
-         <Message
-              hidden={!showError}
-              error
-              content={<div><Icon name='close' size='large' />{this.state.error}</div>}
-            />
-            <Message
-              success
-              hidden={!showSuccess}
-              content={<div><Icon name='thumbs up outline' size='large' />{'Thank you for your contribution.We`ll let you know once your payment verifed'}</div>}
-            />
+        <Message
+          hidden={!showError}
+          error
+          content={<div><Icon name='close' size='large' />{this.state.error}</div>}
+        />
+        <Message
+          success
+          hidden={!showSuccess}
+          content={<div><Icon name='thumbs up outline' size='large' />{'Thank you for your contribution.We`ll let you know once your payment verifed'}</div>}
+        />
 
 
         {this.renderUpdateDonationUser()}
@@ -187,43 +206,43 @@ class DonateViewContainer extends Component {
             )}
 
             {this.props.currentdonations.map(function (don, i) {
-                let date1 = new Date(don.crdate);
-                return (
-                  <Table.Row key={`his${i}`}>
-                    <Table.Cell>{date1.toLocaleString()}</Table.Cell>
-                    <Table.Cell><NumberFormat value={don.amount} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Table.Cell>
-            
-                    <Table.Cell>
-                      {(don['donation-state'] !== 2 && don['imgurl-available']) && (
-                        <Label as='a' content='View' icon='eye' onClick={()=>{this.showDonUrl(don.imgurl)}} />
-                      )}
-                      {(don['donation-state'] !== 2 && don['imgurl-available'] === false) && (
-                           <Label as='a' content='Upload your Reciept' icon='cloud upload' onClick={()=>{this.showUploadModal(don.id)}}/>
-          
-                      )}
-            
-                    </Table.Cell>
-                    {(don['donation-state'] === 0) && (
-                      <Table.Cell warning>
-                        <Icon name='warning sign' />
-                        Not Verified
-                      </Table.Cell>
+              let date1 = new Date(don.crdate);
+              return (
+                <Table.Row key={`his${i}`}>
+                  <Table.Cell>{date1.toLocaleString()}</Table.Cell>
+                  <Table.Cell><NumberFormat value={don.amount} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Table.Cell>
+
+                  <Table.Cell>
+                    {(don['donation-state'] !== 2 && don['imgurl-available']) && (
+                      <Label as='a' content='View' icon='eye' onClick={() => { this.showDonUrl(don.imgurl) }} />
                     )}
-                    {(don['donation-state'] === 1) && (
-                      <Table.Cell positive>
-                        <Icon name='checkmark' />
-                        Approved
-                      </Table.Cell>
+                    {(don['donation-state'] !== 2 && don['imgurl-available'] === false) && (
+                      <Label as='a' content='Upload your Reciept' icon='cloud upload' onClick={() => { this.showUploadModal(don.id) }} />
+
                     )}
-                    {(don['donation-state'] === 2) && (
-                      <Table.Cell negative>
-                        <Icon name='close' />
-                        Cancelled
+
+                  </Table.Cell>
+                  {(don['donation-state'] === 0) && (
+                    <Table.Cell warning>
+                      <Icon name='warning sign' />
+                      Not Verified
                       </Table.Cell>
-                    )}
-            
-                  </Table.Row>
-                );
+                  )}
+                  {(don['donation-state'] === 1) && (
+                    <Table.Cell positive>
+                      <Icon name='checkmark' />
+                      Approved
+                      </Table.Cell>
+                  )}
+                  {(don['donation-state'] === 2) && (
+                    <Table.Cell negative>
+                      <Icon name='close' />
+                      Cancelled
+                      </Table.Cell>
+                  )}
+
+                </Table.Row>
+              );
             }.bind(this))}
 
           </Table.Body>
@@ -234,7 +253,7 @@ class DonateViewContainer extends Component {
     );
   }
 
-  
+
 
   renderDonation = () => {
     let showError = (this.state.error_type === MSG_CREATE_ERROR && this.state.error !== '');
@@ -263,7 +282,7 @@ class DonateViewContainer extends Component {
                 <Col sm={12}>
                   <p>ඔබගේ සියලු ආධාර මුදල් පහත සදහන් අපගේ බැංකු ගිණුම වෙත යොමු කොට එම රිසිට් පත / බැරපතෙහි පිටපතක්
                 මෙහි කරන මෙන් කාරුනිකව ඉල්ලා සිටිමු. </p>
-                 <b>ඔබ බලාපොරොත්තු වන ආධාර මුදලද මෙහි දැමිය හැකි අතර, එම අවස්තාවේදී රිසිට් පත Upload කිරීම අවශය නොවේ,මුදල් බැංකුවට බැර කල පසු, History ටැබය වෙතට ගොස් එය අදාල ස්ථානයේ Upload කරන්න.</b>
+                  <b>ඔබ බලාපොරොත්තු වන ආධාර මුදලද මෙහි දැමිය හැකි අතර, එම අවස්තාවේදී රිසිට් පත Upload කිරීම අවශය නොවේ,මුදල් බැංකුවට බැර කල පසු, History ටැබය වෙතට ගොස් එය අදාල ස්ථානයේ Upload කරන්න.</b>
                 </Col>
                 <Col sm={12}>
                   <List horizontal size={'huge'}>
@@ -315,7 +334,7 @@ class DonateViewContainer extends Component {
   hideUploadModal = () => {
     this.setState({
       modal_upload_visible: false,
-      donation_id:''
+      donation_id: ''
     });
   }
 
@@ -323,8 +342,8 @@ class DonateViewContainer extends Component {
     console.log(`trnid:${trnid}`);
     this.setState({
       modal_upload_visible: true,
-      donation_update_file:null,
-      donation_id:trnid
+      donation_update_file: null,
+      donation_id: trnid
     });
   }
 
@@ -333,7 +352,7 @@ class DonateViewContainer extends Component {
   }
 
   renderUpdateDonationUser = () => {
-  
+
 
     return (
       <Modal open={this.state.modal_upload_visible}
@@ -345,9 +364,9 @@ class DonateViewContainer extends Component {
         <Modal.Header>Upload Your Payment Receipt</Modal.Header>
         <Modal.Content >
           <Modal.Description>
-           
+
             <Form loading={this.props.isReciptUploading} onSubmit={() => this.updateDonationUser()}>
-             
+
               <Form.Input label='Upload your Payment Reciept'
                 type='file'
                 accept="image/png, image/jpeg , application/pdf"
@@ -359,6 +378,202 @@ class DonateViewContainer extends Component {
         </Modal.Content>
 
       </Modal>
+    );
+  }
+
+
+  renderAprovesDonation = () => {
+
+    return (
+      <Tab.Pane attached={false}>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Date</Table.HeaderCell>
+              <Table.HeaderCell>Member</Table.HeaderCell>
+              <Table.HeaderCell>Payment</Table.HeaderCell>
+              <Table.HeaderCell>Reciept</Table.HeaderCell>
+              <Table.HeaderCell>Statues</Table.HeaderCell>
+              <Table.HeaderCell>Action</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {this.props.currentDonations_All_Pending.length === 0 && (
+
+              <Table.Row key={`first`}>
+                <Table.Cell>{` No Payment Records Found Yet for Approve!`}</Table.Cell>
+
+              </Table.Row>
+
+
+            )}
+
+            {this.props.currentDonations_All_Pending.map(function (don, i) {
+              let date1 = new Date(don.crdate);
+              return (
+                <Table.Row key={`his${i}`}>
+                  <Table.Cell>{date1.toLocaleString()}</Table.Cell>
+                  <Table.Cell>
+                    <Header as='h4' image>
+                      <Image src={don.user.img} rounded size='mini' />
+                      <Header.Content>
+                        {don.user.fname}
+              <Header.Subheader> {don.user.lname}</Header.Subheader>
+                      </Header.Content>
+                    </Header>
+
+                  </Table.Cell>
+                  <Table.Cell><NumberFormat value={don.amount} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Table.Cell>
+
+                  <Table.Cell>
+                    {(don['donation-state'] !== 2 && don['imgurl-available']) && (
+                      <Label as='a' content='View' icon='eye' onClick={() => { this.showDonUrl(don.imgurl) }} />
+                    )}
+                    {(don['donation-state'] !== 2 && don['imgurl-available'] === false) && (
+                      <Label as='a' content='Upload your Reciept' icon='cloud upload' onClick={() => { this.showUploadModal(don.id) }} />
+
+                    )}
+
+                  </Table.Cell>
+
+                  {(don['donation-state'] === 0) && (
+                    <Table.Cell warning>
+                      <Icon name='warning sign' />
+                      Not Verified
+                      </Table.Cell>
+                  )}
+                  {(don['donation-state'] === 1) && (
+                    <Table.Cell positive>
+                      <Icon name='checkmark' />
+                      Approved
+                      </Table.Cell>
+                  )}
+                  {(don['donation-state'] === 2) && (
+                    <Table.Cell negative>
+                      <Icon name='close' />
+                      Cancelled
+                      </Table.Cell>
+                  )}
+
+                  <Table.Cell warning>
+                    {(don['donation-state'] === 0) && (
+                      <Segment>
+                        <Button onClick={() => { this.updateDonationState(don.id,1) }}  color='green'>Approve</Button>
+                        <Button onClick={() => { this.updateDonationState(don.id,2) }}  color='red'>Cancel</Button>
+                      </Segment>
+
+                    )}
+                    {(don['donation-state'] === 1 || don['donation-state'] === 2 ) && (
+                        <Button onClick={() => { this.updateDonationState(don.id,0) }}  color='orange'>Reset</Button>
+                    )}
+                  </Table.Cell>
+                </Table.Row>
+              );
+            }.bind(this))}
+
+          </Table.Body>
+
+
+        </Table>
+      </Tab.Pane>
+    );
+  }
+
+
+  renderAlreadyApprovedDonation = () => {
+
+    return (
+      <Tab.Pane attached={false}>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Date</Table.HeaderCell>
+              <Table.HeaderCell>Member</Table.HeaderCell>
+              <Table.HeaderCell>Payment</Table.HeaderCell>
+              <Table.HeaderCell>Reciept</Table.HeaderCell>
+              <Table.HeaderCell>Statues</Table.HeaderCell>
+              <Table.HeaderCell>Action</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {this.props.currentDonations_All_changed.length === 0 && (
+
+              <Table.Row key={`first`}>
+                <Table.Cell>{` No Payment Records Found Yet for Approve!`}</Table.Cell>
+
+              </Table.Row>
+
+
+            )}
+
+            {this.props.currentDonations_All_changed.map(function (don, i) {
+              let date1 = new Date(don.crdate);
+              return (
+                <Table.Row key={`his${i}`}>
+                  <Table.Cell>{date1.toLocaleString()}</Table.Cell>
+                  <Table.Cell>
+                    <Header as='h4' image>
+                      <Image src={don.user.img} rounded size='mini' />
+                      <Header.Content>
+                        {don.user.fname}
+              <Header.Subheader> {don.user.lname}</Header.Subheader>
+                      </Header.Content>
+                    </Header>
+
+                  </Table.Cell>
+                  <Table.Cell><NumberFormat value={don.amount} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Table.Cell>
+
+                  <Table.Cell>
+                    {(don['donation-state'] !== 2 && don['imgurl-available']) && (
+                      <Label as='a' content='View' icon='eye' onClick={() => { this.showDonUrl(don.imgurl) }} />
+                    )}
+                    {(don['donation-state'] !== 2 && don['imgurl-available'] === false) && (
+                      <Label as='a' content='Upload your Reciept' icon='cloud upload' onClick={() => { this.showUploadModal(don.id) }} />
+
+                    )}
+
+                  </Table.Cell>
+
+                  {(don['donation-state'] === 0) && (
+                    <Table.Cell warning>
+                      <Icon name='warning sign' />
+                      Not Verified
+                      </Table.Cell>
+                  )}
+                  {(don['donation-state'] === 1) && (
+                    <Table.Cell positive>
+                      <Icon name='checkmark' />
+                      Approved
+                      </Table.Cell>
+                  )}
+                  {(don['donation-state'] === 2) && (
+                    <Table.Cell negative>
+                      <Icon name='close' />
+                      Cancelled
+                      </Table.Cell>
+                  )}
+
+                  <Table.Cell warning>
+                    {(don['donation-state'] === 0) && (
+                      <Segment>
+                        <Button onClick={() => { this.updateDonationState(don.id,1) }} color='green'>Approve</Button>
+                        <Button onClick={() => { this.updateDonationState(don.id,2) }}  color='red'>Cancel</Button>
+                      </Segment>
+
+                    )}
+                   {(don['donation-state'] === 1 || don['donation-state'] === 2 ) && (
+                        <Button onClick={() => { this.updateDonationState(don.id,0) }}  color='orange'>Reset</Button>
+                    )}
+                  </Table.Cell>
+                </Table.Row>
+              );
+            }.bind(this))}
+
+          </Table.Body>
+
+
+        </Table>
+      </Tab.Pane>
     );
   }
 

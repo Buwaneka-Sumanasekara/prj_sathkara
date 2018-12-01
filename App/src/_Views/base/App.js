@@ -130,6 +130,7 @@ class App extends Component {
                 </Label>
             </NavLink>
           </NavItem>
+         
 
         </Nav>
         <NavbarToggler onClick={this.toggle} />

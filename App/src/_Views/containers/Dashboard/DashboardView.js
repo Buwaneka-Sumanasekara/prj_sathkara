@@ -158,6 +158,16 @@ class DashboardViewContainer extends Component {
               </Statistic>
             </Table.Cell>
           </Table.Row>
+          <Table.Row>
+            <Table.Cell>
+              Your Donations
+          </Table.Cell>
+            <Table.Cell>
+              <Statistic color='violet' size='mini' >
+                <Statistic.Value><NumberFormat value={this.props.currentdonation} displayType={'text'} thousandSeparator={true} prefix={'රු '} /></Statistic.Value>
+              </Statistic>
+            </Table.Cell>
+          </Table.Row>
         </Table.Body>
       </Table>
     );
