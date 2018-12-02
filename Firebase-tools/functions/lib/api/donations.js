@@ -63,7 +63,7 @@ function updateDonationState(req, res) {
                     "donation-state": donstate
                 });
                 if (donstate === '1') {
-                    yield commonfun.saveNotifications(false, uid, token, 'Thanks you!', 'Your donation is Approved by the Org', 'http://teamsathkara.org/donations');
+                    yield commonfun.saveNotifications(false, uid, token, 'Thanks you!', 'Your donation is Approved by the Admin', 'http://teamsathkara.org/donations');
                 }
                 else if (donstate === '2') {
                     yield commonfun.saveNotifications(false, uid, token, 'H!', 'Your donation is cancelled by the Admin', 'http://teamsathkara.org/donations');

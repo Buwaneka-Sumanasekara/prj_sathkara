@@ -18,6 +18,9 @@ class DashboardViewContainer extends Component {
    
     await this.props.loadCurrentEvent();
     commonFunctions.askForPermissioToReceiveNotifications(this.props.uid);
+    commonFunctions.TokenChange(this.props.uid);
+    this.props.updateNotificationToken(this.props.uid);
+    this.props.updateNotifications(this.props.uid);
     this.props.updateAppLiveInfo();
     this.props.updateSelfDonations(this.props.liveEvent.id, this.props.uid);
   }

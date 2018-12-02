@@ -6,6 +6,8 @@ import { Container, Row, Col, Collapse, Nav, Navbar, NavItem, NavLink, NavbarBra
 import { Dimmer, Loader, Image, Segment, Menu, Icon, Label, Button } from 'semantic-ui-react';
 //Actions
 import * as authActions from '../../redux/auth/action';
+import * as commonFunctions from '../../common';
+
 import imgLogo from '../styles/img/logo.jpg';
 
 
@@ -29,7 +31,7 @@ class App extends Component {
   };
   componentDidMount = async () => {
     await this.props.authCheck();
-    
+    await commonFunctions.OnMessageListner();
   }
 
 
@@ -52,8 +54,10 @@ class App extends Component {
       this.props.authLogout();
     } else if (name === 'Home') {
       this.context.router.history.push(`/`);
-    }else if (name === 'Donation') {
+    } else if (name === 'Donation') {
       this.context.router.history.push(`/donations`);
+    }else if (name === 'Notification') {
+      this.context.router.history.push(`/notifications`);
     }
 
   }
@@ -69,12 +73,12 @@ class App extends Component {
             <Col sm={12}>
               <Segment basic>
 
-                 <center>
-                  <Image src={imgLogo}  />
-                  </center><br/>
+                <center>
+                  <Image src={imgLogo} />
+                </center><br />
 
                 <Dimmer active inverted>
-                 
+
                   <Loader size='large'>Loading</Loader>
                 </Dimmer>
 
@@ -109,45 +113,53 @@ class App extends Component {
         <Nav className="ml-auto" navbar>
           <NavItem onClick={(e) => this.handleItemClick("Home")}>
             <NavLink >
-              <Label  image color='blue' basic>
-              <Icon
-                    name={"home"}
-                    size='large'
-                    color='blue'
-                  />
+              <Label image color='blue' basic>
+                <Icon
+                  name={"home"}
+                  size='large'
+                  color='blue'
+                />
                 Home
                 </Label>
             </NavLink>
           </NavItem>
           <NavItem onClick={(e) => this.handleItemClick("Donation")}>
             <NavLink >
-              <Label  image color='red' basic>
-              <Icon
-                    name={"heartbeat"}
-                    size='large'
-                    color='red'
-                  />
+              <Label image color='red' basic>
+                <Icon
+                  name={"heartbeat"}
+                  size='large'
+                  color='red'
+                />
                 Donate Now !
                 </Label>
             </NavLink>
           </NavItem>
-         
+          
 
         </Nav>
         <NavbarToggler onClick={this.toggle} />
         <Collapse isOpen={this.state.isOpen} navbar>
           <Nav className="ml-auto" navbar>
+            <NavItem onClick={(e) => this.handleItemClick("Notification")}>
+              <NavLink >
+                <Label color='orange' >
+                  <Icon name='bell outline'  />{(this.props.notif_private_count + this.props.notif_topic_count)}
+                </Label>
+              </NavLink>
+            </NavItem>
             <NavItem>
               <NavLink >
-                <Label  image color='blue' basic>
+                <Label image color='blue' basic>
                   <img src={this.props.user.img} />
                   {`${this.props.user.fname} ${this.props.user.lname}`}
                 </Label>
               </NavLink>
             </NavItem>
+
             <NavItem>
               <NavLink onClick={(e) => this.handleItemClick(SCREEN_LOGOUT)}>
-                <Label  color='blue' basic>
+                <Label color='blue' basic>
                   <Icon
                     name={"close"}
                     size='large'
@@ -173,12 +185,13 @@ class App extends Component {
 const mapStateToProps = state => ({
   user: state.auth.user,
   isAuthenticated: state.auth.isAuthenticated,
-  authLoading: state.auth.isAuthChecking
+  authLoading: state.auth.isAuthChecking,
+  notif_private_count: state.notifications.notif_private_count,
+  notif_topic_count: state.notifications.notif_topic_count
 });
 const mapDispatchToProps = {
   authCheck: authActions.authCheck,
   authLogout: authActions.authLogout,
- 
 };
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 

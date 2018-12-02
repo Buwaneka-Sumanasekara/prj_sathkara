@@ -13,7 +13,21 @@ console.log(WebAPI);
 
 }
 
+async function updateDonation(obj) {
+  
+        return fetch(`${WebAPI}/updateDonation`, {
+            timeout: 1200*1000,
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body:JSON.stringify(obj)
+        });
+    
+    }
 
 export default {
-    getAllDonations
+    getAllDonations,
+    updateDonation
 }

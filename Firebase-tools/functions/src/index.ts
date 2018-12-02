@@ -5,10 +5,12 @@ import * as api from './api';
 // Initializes Cloud Functions.
 admin.initializeApp();
 
+
 exports.general_calculateExpectRecivedAmounts = generalActions.calculateExpectRecivedAmounts;
 exports.general_updateMembers = generalActions.updateMembers;
 exports.general_sendNotificationsUsers=generalActions.sendNotificationsUsers;
 exports.general_sendNotificationsTopics=generalActions.sendNotificationsTopics;
+exports.general_sendDonationNotifications=generalActions.sendDonationNotifications
 
 //API
 exports.webApi = api.webApi;

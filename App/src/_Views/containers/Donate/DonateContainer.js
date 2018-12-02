@@ -25,7 +25,8 @@ const mapStateToProps = state => ({
     isReciptUploading:state.donation.isReciptUploading,
     uploadError:state.donation.uploadError,
     currentDonations_All_Pending:state.donation.currentDonations_All_Pending,
-    currentDonations_All_changed:state.donation.currentDonations_All_changed
+    currentDonations_All_changed:state.donation.currentDonations_All_changed,
+    notif_token:state.notifications.notif_token
 });
 
 // Any actions to map to the component?
@@ -34,7 +35,8 @@ const mapDispatchToProps = {
     saveDonation:DonationActions.saveDonation,
     updateSelfDonationsList:DonationActions.updateSelfDonationsList,
     uploadDonationImgOnlyAction:DonationActions.uploadDonationImgOnlyAction,
-    LoadAllUsersDonations:DonationActions.LoadAllUsersDonations
+    LoadAllUsersDonations:DonationActions.LoadAllUsersDonations,
+    updateDonationState:DonationActions.updateDonationState
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DonateView);

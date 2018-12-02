@@ -131,8 +131,25 @@ class DonateViewContainer extends Component {
   }
 
 
-  updateDonationState = (donid,state) => {
-   
+  updateDonationStateUI = async(donid, state) => {
+/*
+const eventid = req.body.eventid;
+        const uid = req.body.uid;
+        const trnid = req.body.trnid;
+        const donstate = req.body.donstate;
+        const token = req.body.token;
+*/
+
+      let obj={};
+      obj['eventid']=this.props.liveEvent.id;
+      obj['uid']=this.props.uid;
+      obj['trnid']=donid;
+      obj['donstate']=state;
+      obj['token']=this.props.notif_token;
+      await this.props.updateDonationState(obj);    
+      if (this.props.user.user_type === 1) {
+        this.props.LoadAllUsersDonations(this.props.liveEvent.id);
+      }
   }
 
   render = () => {
@@ -150,7 +167,7 @@ class DonateViewContainer extends Component {
         { menuItem: 'Pending', render: () => this.renderAprovesDonation() },
         { menuItem: 'Approved', render: () => this.renderAlreadyApprovedDonation() }
 
-        
+
       ]
     }
 
@@ -359,6 +376,7 @@ class DonateViewContainer extends Component {
         onClose={() => this.hideUploadModal()}
         centered={false}
         size={'mini'}
+        closeIcon
       >
 
         <Modal.Header>Upload Your Payment Receipt</Modal.Header>
@@ -376,7 +394,12 @@ class DonateViewContainer extends Component {
             </Form>
           </Modal.Description>
         </Modal.Content>
+        <Modal.Actions>
+          <Button color='red' onClick={() => this.hideUploadModal()}>
+             cancel
+      </Button>
 
+        </Modal.Actions>
       </Modal>
     );
   }
@@ -398,7 +421,7 @@ class DonateViewContainer extends Component {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {this.props.currentDonations_All_Pending.length === 0 && (
+            {this.props.currentDonations_All_Pending !== undefined && this.props.currentDonations_All_Pending.length === 0 && (
 
               <Table.Row key={`first`}>
                 <Table.Cell>{` No Payment Records Found Yet for Approve!`}</Table.Cell>
@@ -408,7 +431,7 @@ class DonateViewContainer extends Component {
 
             )}
 
-            {this.props.currentDonations_All_Pending.map(function (don, i) {
+            {this.props.currentDonations_All_Pending !== undefined && this.props.currentDonations_All_Pending.map(function (don, i) {
               let date1 = new Date(don.crdate);
               return (
                 <Table.Row key={`his${i}`}>
@@ -418,7 +441,7 @@ class DonateViewContainer extends Component {
                       <Image src={don.user.img} rounded size='mini' />
                       <Header.Content>
                         {don.user.fname}
-              <Header.Subheader> {don.user.lname}</Header.Subheader>
+                        <Header.Subheader> {don.user.lname}</Header.Subheader>
                       </Header.Content>
                     </Header>
 
@@ -458,13 +481,13 @@ class DonateViewContainer extends Component {
                   <Table.Cell warning>
                     {(don['donation-state'] === 0) && (
                       <Segment>
-                        <Button onClick={() => { this.updateDonationState(don.id,1) }}  color='green'>Approve</Button>
-                        <Button onClick={() => { this.updateDonationState(don.id,2) }}  color='red'>Cancel</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1) }} color='green'>Approve</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2) }} color='red'>Cancel</Button>
                       </Segment>
 
                     )}
-                    {(don['donation-state'] === 1 || don['donation-state'] === 2 ) && (
-                        <Button onClick={() => { this.updateDonationState(don.id,0) }}  color='orange'>Reset</Button>
+                    {(don['donation-state'] === 1 || don['donation-state'] === 2) && (
+                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0) }} color='orange'>Reset</Button>
                     )}
                   </Table.Cell>
                 </Table.Row>
@@ -496,7 +519,7 @@ class DonateViewContainer extends Component {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {this.props.currentDonations_All_changed.length === 0 && (
+            {this.props.currentDonations_All_changed!== undefined && this.props.currentDonations_All_changed.length === 0 && (
 
               <Table.Row key={`first`}>
                 <Table.Cell>{` No Payment Records Found Yet for Approve!`}</Table.Cell>
@@ -506,7 +529,7 @@ class DonateViewContainer extends Component {
 
             )}
 
-            {this.props.currentDonations_All_changed.map(function (don, i) {
+            {this.props.currentDonations_All_changed!== undefined && this.props.currentDonations_All_changed.map(function (don, i) {
               let date1 = new Date(don.crdate);
               return (
                 <Table.Row key={`his${i}`}>
@@ -516,7 +539,7 @@ class DonateViewContainer extends Component {
                       <Image src={don.user.img} rounded size='mini' />
                       <Header.Content>
                         {don.user.fname}
-              <Header.Subheader> {don.user.lname}</Header.Subheader>
+                        <Header.Subheader> {don.user.lname}</Header.Subheader>
                       </Header.Content>
                     </Header>
 
@@ -556,13 +579,13 @@ class DonateViewContainer extends Component {
                   <Table.Cell warning>
                     {(don['donation-state'] === 0) && (
                       <Segment>
-                        <Button onClick={() => { this.updateDonationState(don.id,1) }} color='green'>Approve</Button>
-                        <Button onClick={() => { this.updateDonationState(don.id,2) }}  color='red'>Cancel</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1) }} color='green'>Approve</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2) }} color='red'>Cancel</Button>
                       </Segment>
 
                     )}
-                   {(don['donation-state'] === 1 || don['donation-state'] === 2 ) && (
-                        <Button onClick={() => { this.updateDonationState(don.id,0) }}  color='orange'>Reset</Button>
+                    {(don['donation-state'] === 1 || don['donation-state'] === 2) && (
+                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0) }} color='orange'>Reset</Button>
                     )}
                   </Table.Cell>
                 </Table.Row>

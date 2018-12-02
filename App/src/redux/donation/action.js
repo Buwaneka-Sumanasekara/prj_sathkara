@@ -43,10 +43,11 @@ function updateDonation(dispatch, trnid, imgurl, obj) {
   }
   donref.set(getDonationObj(upobj), function (er) {
     if (er) {
-      alert("Data could not be saved." + er);
+      
       dispatch({ type: 'DONATION_LOADING', error: "Data could not be saved." + er, isLoading: false });
     } else {
       dispatch({ type: 'DONATION_LOADING', error: '', isLoading: false });
+      
     }
   });
 
@@ -270,5 +271,19 @@ export function LoadAllUsersDonations(eventid) {
       console.log(`Error:${error}`)
       dispatch({ type: 'DONATION_ALL_LOADING', isLoading: false });
     }
+  }
+}
+
+
+export function updateDonationState(obj) {
+  return async dispatch => {
+    console.log(JSON.stringify(obj))
+    const apiResponse = await donationApi.updateDonation(obj);
+    console.log(apiResponse)
+    const respJson = await apiResponse.json();
+    if (apiResponse.status === 200) {
+
+    }
+
   }
 }

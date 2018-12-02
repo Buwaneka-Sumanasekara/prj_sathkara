@@ -6,9 +6,13 @@ const prodConfig = {
     messagingSenderId: "937169849327"
 };
 
+const devConfig = {
+    messagingSenderId: "1025410139450"
 
+};
 
-const config = prodConfig
+//const config = devConfig;
+const config = prodConfig;
 
 firebase.initializeApp(config);
 

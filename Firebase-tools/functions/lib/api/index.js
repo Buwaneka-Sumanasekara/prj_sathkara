@@ -11,6 +11,7 @@ app.use(cors());
 app.get('/getdonations/:eventid', donationApi.getEventsDonations);
 app.post('/sendNotification', notificationApi.sendNotificationsDirect);
 app.post('/sendNotificationAuto', notificationApi.sendNotificationsAuto);
+app.post('/updateDonation', donationApi.updateDonationState);
 const main = express();
 main.use('/api/v1', app);
 main.use(bodyParser.json());

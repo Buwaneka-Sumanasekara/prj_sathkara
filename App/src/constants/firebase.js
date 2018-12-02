@@ -27,17 +27,17 @@ const config = process.env.NODE_ENV === 'production'
   ? prodConfig
   : devConfig;
 
-console.log(`Mode:${process.env.NODE_ENV}`)  
+console.log(`Mode:${process.env.NODE_ENV}`)
 console.log(`System init as #${JSON.stringify(config)}#`)
 
 if (!firebase.apps.length) {
   firebase.initializeApp(config);
-  navigator.serviceWorker
-  .register('/firebase-messaging-sw.js')
-  .then((registration) => {
-    firebase.messaging().useServiceWorker(registration);
-  });
-  
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log(`firebase service worker registered!`)
+      firebase.messaging().useServiceWorker(registration);
+    });
+
 }
 
 const auth = firebase.auth();
@@ -45,25 +45,25 @@ const database = firebase.database();
 const storage = firebase.storage();
 const messaging = firebase.messaging();
 
-if(process.env.NODE_ENV==='production'){
+if (process.env.NODE_ENV === 'production') {
   messaging.usePublicVapidKey("BFXAY4O1TFz7NOzz7qdzMr6f8WSLVfa0MyKCKH-DNAOI_9JOt7vOixxFUCXkS6d_BuEwoWToRG13I2EZiBJ436w");
-}else{
+} else {
   messaging.usePublicVapidKey("BL_8IFwrAbN4b0ycQ_haJ2fIRt2VSG8wiglsyOsdd4w0ZdnaOB4SenyKh7OOOn1bbAmmqDxoXsNERL_LgyQMRQA");
 }
 
 
 
 const WebAPI = `https://${config.authDomain}/api/v1`;
-let serverKey="";
-if(process.env.NODE_ENV==='production'){
-  serverKey="AAAA2jOtC-8:APA91bFxeQlY3zvt0sOp5nS9ax2fuNsdq-oovxz1aQ0nyL6MALD1eFXb_CUj8c9ACX4tXMJ6_yJwm4yYrmHuWfc_USYI7b71uFyPb0xq5SrOXu339sW0_Z6VtZS0deZb-6r5yi83VEew"
+let serverKey = "";
+if (process.env.NODE_ENV === 'production') {
+  serverKey = "AAAA2jOtC-8:APA91bFxeQlY3zvt0sOp5nS9ax2fuNsdq-oovxz1aQ0nyL6MALD1eFXb_CUj8c9ACX4tXMJ6_yJwm4yYrmHuWfc_USYI7b71uFyPb0xq5SrOXu339sW0_Z6VtZS0deZb-6r5yi83VEew"
 
-}else{
-  serverKey="AAAA7r81BTo:APA91bFSEOmIm5_NE_HQpl24EILdnv4PizLkk339g9R4MBgwdcn2gOcTW4NviGtmfOHwonXMtCcamwfJFYSlshMntBQ2PHdOFepxXYfMU0dT5cS3BPiCf90VOpJRfgWB2YbCB23MVtT3"
+} else {
+  serverKey = "AAAA7r81BTo:APA91bFSEOmIm5_NE_HQpl24EILdnv4PizLkk339g9R4MBgwdcn2gOcTW4NviGtmfOHwonXMtCcamwfJFYSlshMntBQ2PHdOFepxXYfMU0dT5cS3BPiCf90VOpJRfgWB2YbCB23MVtT3"
 
 }
 
-
+let topic='sathkara-common-notif';
 
 export {
   firebase,
@@ -72,5 +72,6 @@ export {
   storage,
   messaging,
   WebAPI,
-  serverKey
+  serverKey,
+  topic
 };

@@ -10,9 +10,10 @@ import * as notificationApi from './notifications';
 const app = express();
 app.use(cors())
 app.get('/getdonations/:eventid', donationApi.getEventsDonations);
+
 app.post('/sendNotification', notificationApi.sendNotificationsDirect);
 app.post('/sendNotificationAuto', notificationApi.sendNotificationsAuto);
-
+app.post('/updateDonation', donationApi.updateDonationState);
 
 const main = express();
 

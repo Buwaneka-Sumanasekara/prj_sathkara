@@ -1,4 +1,5 @@
-import { messaging,serverKey,database } from '../constants/firebase';
+import { messaging,serverKey,database,topic } from '../constants/firebase';
+
 
 export async function askForPermissioToReceiveNotifications(uid) {
   messaging.requestPermission().then(function () {
@@ -6,7 +7,9 @@ export async function askForPermissioToReceiveNotifications(uid) {
     
     messaging.getToken().then(function(currentToken) {
       if (currentToken) {
-        console.log(currentToken);
+        console.log(`Msg Token:`);
+        console.log(currentToken)
+
         updateUserToken(uid,currentToken);
         subscribeForCommonNotifications(currentToken);
 
@@ -31,8 +34,24 @@ export async function askForPermissioToReceiveNotifications(uid) {
   });
 }
 
-async function updateUserToken(uid,token){
+
+export async function TokenChange(uid) {
+  messaging.onTokenRefresh(function() {
+    messaging.getToken().then(function(refreshedToken) {
+      console.log('Token refreshed.');
+      updateUserToken(uid,refreshedToken)
+    }).catch(function(err) {
+      console.log('Unable to retrieve refreshed token ', err);
+      
+    });
+  });
+}
+
+export async function updateUserToken(uid,token){
+
+
   if(uid !== undefined){
+ 
     let donref = database.ref(`user-notif-tokens/${uid}`);
     let upobj = {};
     upobj['uid'] = uid;
@@ -44,17 +63,43 @@ async function updateUserToken(uid,token){
 }
 
 async function subscribeForCommonNotifications(token) {
-    
-  return fetch(`https://iid.googleapis.com/iid/v1/${token}/rel/topics/sathkara-common-notif`, {
+  console.log(`Subcribe Global msg to:${token}`);
+  console.log(`${serverKey}`);
+   
+  return fetch(`https://iid.googleapis.com/iid/v1/${token}/rel/topics/${topic}`, {
       timeout: 1200 * 1000,
       method: "POST",
       headers: {
           "Content-Type": "application/json",
           "Authorization":`key=${serverKey}`
-      },
-      body:JSON.stringify({
-
-      })
+      }
   });
 
+}
+
+
+export async function updateNotificationState(notif){
+  if(notif !== undefined){
+    if(notif.istopic){
+      let donref = database.ref(`notifications/topics/${notif.id}`);
+      let upobj = {};
+      upobj['isseen'] = true;
+      donref.update(upobj);
+    }else{
+      let donref = database.ref(`notifications/users/${notif.uid}/${notif.id}`);
+      let upobj = {};
+      upobj['isseen'] = true;
+      donref.update(upobj);
+    }
+   
+  }
+ 
+}
+
+
+export async function OnMessageListner(){
+  messaging.onMessage(function(payload) {
+    console.log('Message received. ', payload);
+   
+  });
 }

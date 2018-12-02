@@ -1,6 +1,57 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import * as _ from 'lodash';
+import * as commonfun from '../common';
+
+
+const sendNotifictionMsgIn = (istopic, obj) => {
+    if (istopic) {
+        const message = {
+            notification: {
+                title: `Team සත්කාර : ${obj.title}`,
+                body: obj.body,
+            },
+            webpush: {
+                notification: {
+                    title: `Team සත්කාර : ${obj.title}`,
+                    body: obj.body,
+                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
+                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
+                }, fcm_options: {
+                    link: obj.url
+                }
+            },
+            topic: 'sathkara-common-notif'
+        };
+        return admin.messaging().send(message);
+    } else {
+        const registrationToken = obj.token;
+
+        const message = {
+            notification: {
+                title: `${obj.title}`,
+                body: obj.body,
+            },
+            webpush: {
+                notification: {
+                    title: obj.title,
+                    body: obj.body,
+                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
+                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
+
+                }, fcm_options: {
+                    link: obj.url
+                }
+            },
+            token: registrationToken
+        };
+
+        return admin.messaging().send(message);
+    }
+
+}   
+
+
 
 export const calculateExpectRecivedAmounts = functions.database.ref('/donations')
     .onWrite(async evt => {
@@ -40,6 +91,8 @@ export const calculateExpectRecivedAmounts = functions.database.ref('/donations'
                 "total-recived": recivedAmount,
                 "total-contributors": donationsArray.length
             });
+
+
         } catch (error) {
             const evntref = admin.database().ref(`events/${liveEvent.id}`);
             await evntref.update({
@@ -70,7 +123,46 @@ export const updateMembers = functions.database.ref('/user')
     });
 
 
-//Notifiction sender
+ 
+
+
+export const sendDonationNotifications = functions.database.ref('/donations')
+    .onWrite(async (change, context) => {
+
+        if (change.before.exists()) {
+            const snap = change.after.val();
+
+
+            console.log(`Donation NotifObj:`, snap);
+            const snapinner = Object.keys(snap).map(i => snap[i]);
+            const mdsnapinner=snapinner[snapinner.length-1];
+            const secobj = Object.keys(mdsnapinner).map(i => mdsnapinner[i]);
+            const mdsecobj=secobj[secobj.length-1];
+            const prvobj = Object.keys(mdsecobj).map(i => mdsecobj[i]);
+            const obj=prvobj[prvobj.length-1];
+            console.log(`Donation Notif:`, obj);
+    
+           
+            const user = await admin.database().ref(`user/${obj.uid}`).once("value");
+            const userobj = user.val();
+    
+            const msgobj={};
+            msgobj['title']='Donations Alert';
+            msgobj['body']=`${userobj.fname} donated ${obj.amount} LKR for sathkara Event! `;
+            msgobj['url']='http://teamsathkara.org/donations';
+            //return commonfun.sendNotifictionMsg(true,msgobj);
+            return sendNotifictionMsgIn(true,msgobj);
+
+        }else{
+            return null;
+        }
+        
+
+    });
+
+
+
+
 
 export const sendNotificationsTopics = functions.database.ref('/notifications/topics')
     .onWrite((change, context) => {
@@ -81,24 +173,8 @@ export const sendNotificationsTopics = functions.database.ref('/notifications/to
         const obj = Object.keys(snap).map(i => snap[i])[0];
         console.log(`Notification Obj[Topic]:`, obj);
 
-        const message = {
-            notification: {
-                title: `Team සත්කාර : ${obj.title}`,
-                body: obj.body,
-            },
-            webpush: {
-                notification: {
-                    title: `Team සත්කාර : ${obj.title}`,
-                    body: obj.body,
-                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
-                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
-                }, fcm_options: {
-                    link: obj.url
-                }
-            },
-            topic: 'sathkara-common-notif'
-        };
-        return admin.messaging().send(message);
+        //return commonfun.sendNotifictionMsg(true,obj);
+        return sendNotifictionMsgIn(true,obj);
     });
 
 export const sendNotificationsUsers = functions.database.ref('/notifications/users')
@@ -115,28 +191,7 @@ export const sendNotificationsUsers = functions.database.ref('/notifications/use
 
         console.log(`Notification Obj:`, obj);
 
+       // return commonfun.sendNotifictionMsg(false,obj);
+       return sendNotifictionMsgIn(false,obj);
 
-
-        const registrationToken = obj.token;
-
-        const message = {
-            notification: {
-                title: `${obj.title}`,
-                body: obj.body,
-            },
-            webpush: {
-                notification: {
-                    title: obj.title,
-                    body: obj.body,
-                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
-                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
-               
-                }, fcm_options: {
-                    link: obj.url
-                }
-            },
-            token: registrationToken
-        };
-
-        return admin.messaging().send(message);
     });

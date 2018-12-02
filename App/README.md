@@ -45,6 +45,8 @@ $ firebase deploy --only functions
 Deploy host only
 
 ```sh
+$ cd [PrjFolder]/App
+$ cd npm run-script build
 $ cd [PrjFolder]/Firebase-tools
 $ firebase use default
 $ firebase deploy --except functions

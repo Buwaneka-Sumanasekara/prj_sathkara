@@ -8,31 +8,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const admin = require("firebase-admin");
 const commonfun = require("../common");
+const admin = require("firebase-admin");
+const sendNotifictionMsgIn = (istopic, obj) => {
+    if (istopic) {
+        const message = {
+            notification: {
+                title: `Team සත්කාර : ${obj.title}`,
+                body: obj.body,
+            },
+            webpush: {
+                notification: {
+                    title: `Team සත්කාර : ${obj.title}`,
+                    body: obj.body,
+                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
+                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
+                }, fcm_options: {
+                    link: obj.url
+                }
+            },
+            topic: 'sathkara-common-notif'
+        };
+        return admin.messaging().send(message);
+    }
+    else {
+        const registrationToken = obj.token;
+        const message = {
+            notification: {
+                title: `${obj.title}`,
+                body: obj.body,
+            },
+            webpush: {
+                notification: {
+                    title: obj.title,
+                    body: obj.body,
+                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
+                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
+                }, fcm_options: {
+                    link: obj.url
+                }
+            },
+            token: registrationToken
+        };
+        return admin.messaging().send(message);
+    }
+};
 function sendNotificationsDirect(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const obj = req.body;
         if (obj.istopic) {
-            const message = {
-                notification: {
-                    title: `Team සත්කාර : ${obj.title}`,
-                    body: obj.body,
-                },
-                webpush: {
-                    notification: {
-                        title: `Team සත්කාර : ${obj.title}`,
-                        body: obj.body,
-                        badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
-                        icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
-                    }, fcm_options: {
-                        link: obj.url
-                    }
-                },
-                topic: 'sathkara-common-notif'
-            };
-            admin.messaging().send(message)
-                .then((response) => {
+            sendNotifictionMsgIn(true, obj).then((response) => {
                 res.status(200).send({ 'msg': "Send message to group" });
             })
                 .catch((error) => {
@@ -40,28 +65,8 @@ function sendNotificationsDirect(req, res) {
             });
         }
         else {
-            const registrationToken = obj.token;
-            const message = {
-                notification: {
-                    title: `${obj.title}`,
-                    body: obj.body,
-                },
-                webpush: {
-                    notification: {
-                        title: obj.title,
-                        body: obj.body,
-                        badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
-                        icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
-                    }, fcm_options: {
-                        link: obj.url
-                    }
-                },
-                token: registrationToken
-            };
-            admin.messaging().send(message)
-                .then((response) => {
-                // Response is a message ID string.
-                res.status(200).send({ 'msg': "Send message to User" });
+            sendNotifictionMsgIn(false, obj).then((response) => {
+                res.status(200).send({ 'msg': "Send message to group" });
             })
                 .catch((error) => {
                 res.status(400).send({ 'msg': `Send Faild ${error}` });

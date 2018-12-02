@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import * as eventActions from '../../../redux/event/action';
 import * as appActions from '../../../redux/app/action';
 import * as donationActions from '../../../redux/donation/action';
-
+import * as notifActions from '../../../redux/notifications/action';
 
 
 // The component we're mapping to
@@ -26,7 +26,8 @@ const mapDispatchToProps = {
     loadCurrentEvent:eventActions.loadCurrentEvent,
     updateAppLiveInfo:appActions.updateAppLiveInfo,
     updateSelfDonations:donationActions.updateSelfDonations,
-
+    updateNotifications:notifActions.updateNotifications,
+    updateNotificationToken:notifActions.updateNotificationToken
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardView);

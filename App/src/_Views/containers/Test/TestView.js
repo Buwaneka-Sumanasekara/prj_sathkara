@@ -34,16 +34,9 @@ class TestViewContainer extends Component {
   render = () => {
      return (
     <div>
-         <h1>{`TestView URL:${this.props.match.url} `}</h1>
+         <h1>{`Req URL:${this.props.match.url} `}</h1>
      
-        <h2>{`Redux State: ${this.props.mymarks}`}</h2>
-        <label>
-          Name:
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
-        </label>
-        <button onClick={this.clickButton}>Add</button>
-
-
+        
       </div>
      );
   };

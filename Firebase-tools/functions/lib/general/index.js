@@ -10,6 +10,49 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const sendNotifictionMsgIn = (istopic, obj) => {
+    if (istopic) {
+        const message = {
+            notification: {
+                title: `Team සත්කාර : ${obj.title}`,
+                body: obj.body,
+            },
+            webpush: {
+                notification: {
+                    title: `Team සත්කාර : ${obj.title}`,
+                    body: obj.body,
+                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
+                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
+                }, fcm_options: {
+                    link: obj.url
+                }
+            },
+            topic: 'sathkara-common-notif'
+        };
+        return admin.messaging().send(message);
+    }
+    else {
+        const registrationToken = obj.token;
+        const message = {
+            notification: {
+                title: `${obj.title}`,
+                body: obj.body,
+            },
+            webpush: {
+                notification: {
+                    title: obj.title,
+                    body: obj.body,
+                    badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
+                    icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
+                }, fcm_options: {
+                    link: obj.url
+                }
+            },
+            token: registrationToken
+        };
+        return admin.messaging().send(message);
+    }
+};
 exports.calculateExpectRecivedAmounts = functions.database.ref('/donations')
     .onWrite((evt) => __awaiter(this, void 0, void 0, function* () {
     const eventsref = admin.database().ref(`events`);
@@ -67,31 +110,39 @@ exports.updateMembers = functions.database.ref('/user')
         console.error(`Error in updateMembers ${error}`);
     }
 }));
-//Notifiction sender
+exports.sendDonationNotifications = functions.database.ref('/donations')
+    .onWrite((change, context) => __awaiter(this, void 0, void 0, function* () {
+    if (change.before.exists()) {
+        const snap = change.after.val();
+        console.log(`Donation NotifObj:`, snap);
+        const snapinner = Object.keys(snap).map(i => snap[i]);
+        const mdsnapinner = snapinner[snapinner.length - 1];
+        const secobj = Object.keys(mdsnapinner).map(i => mdsnapinner[i]);
+        const mdsecobj = secobj[secobj.length - 1];
+        const prvobj = Object.keys(mdsecobj).map(i => mdsecobj[i]);
+        const obj = prvobj[prvobj.length - 1];
+        console.log(`Donation Notif:`, obj);
+        const user = yield admin.database().ref(`user/${obj.uid}`).once("value");
+        const userobj = user.val();
+        const msgobj = {};
+        msgobj['title'] = 'Donations Alert';
+        msgobj['body'] = `${userobj.fname} donated ${obj.amount} LKR for sathkara Event! `;
+        msgobj['url'] = 'http://teamsathkara.org/donations';
+        //return commonfun.sendNotifictionMsg(true,msgobj);
+        return sendNotifictionMsgIn(true, msgobj);
+    }
+    else {
+        return null;
+    }
+}));
 exports.sendNotificationsTopics = functions.database.ref('/notifications/topics')
     .onWrite((change, context) => {
     // Grab the current value of what was written to the Realtime Database.
     const snap = change.after.val();
     const obj = Object.keys(snap).map(i => snap[i])[0];
     console.log(`Notification Obj[Topic]:`, obj);
-    const message = {
-        notification: {
-            title: `Team සත්කාර : ${obj.title}`,
-            body: obj.body,
-        },
-        webpush: {
-            notification: {
-                title: `Team සත්කාර : ${obj.title}`,
-                body: obj.body,
-                badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
-                icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
-            }, fcm_options: {
-                link: obj.url
-            }
-        },
-        topic: 'sathkara-common-notif'
-    };
-    return admin.messaging().send(message);
+    //return commonfun.sendNotifictionMsg(true,obj);
+    return sendNotifictionMsgIn(true, obj);
 });
 exports.sendNotificationsUsers = functions.database.ref('/notifications/users')
     .onWrite((change, context) => {
@@ -101,24 +152,7 @@ exports.sendNotificationsUsers = functions.database.ref('/notifications/users')
     const snapinner = Object.keys(snap).map(i => snap[i])[0];
     const obj = Object.keys(snapinner).map(i => snapinner[i])[0];
     console.log(`Notification Obj:`, obj);
-    const registrationToken = obj.token;
-    const message = {
-        notification: {
-            title: `${obj.title}`,
-            body: obj.body,
-        },
-        webpush: {
-            notification: {
-                title: obj.title,
-                body: obj.body,
-                badge: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb",
-                icon: "https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb"
-            }, fcm_options: {
-                link: obj.url
-            }
-        },
-        token: registrationToken
-    };
-    return admin.messaging().send(message);
+    // return commonfun.sendNotifictionMsg(false,obj);
+    return sendNotifictionMsgIn(false, obj);
 });
 //# sourceMappingURL=index.js.map
