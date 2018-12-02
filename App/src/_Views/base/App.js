@@ -28,7 +28,8 @@ class App extends Component {
 
   };
   componentDidMount = async () => {
-    await this.props.authCheck()
+    await this.props.authCheck();
+    
   }
 
 
@@ -176,7 +177,8 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = {
   authCheck: authActions.authCheck,
-  authLogout: authActions.authLogout
+  authLogout: authActions.authLogout,
+ 
 };
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 

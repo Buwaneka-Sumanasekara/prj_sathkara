@@ -5,6 +5,7 @@ import { Button, Header, Icon, Segment, Statistic, Table, Image,Message } from '
 import NumberFormat from 'react-number-format';
 import PropTypes from "prop-types";
 import imgcontributors from '../../styles/img/donator.png';
+import * as commonFunctions from '../../../common';
 
 class DashboardViewContainer extends Component {
   static contextTypes = {
@@ -14,7 +15,9 @@ class DashboardViewContainer extends Component {
 
 
   componentDidMount = async () => {
+   
     await this.props.loadCurrentEvent();
+    commonFunctions.askForPermissioToReceiveNotifications(this.props.uid);
     this.props.updateAppLiveInfo();
     this.props.updateSelfDonations(this.props.liveEvent.id, this.props.uid);
   }

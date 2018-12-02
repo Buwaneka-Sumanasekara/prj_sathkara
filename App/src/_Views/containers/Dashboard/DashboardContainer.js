@@ -8,6 +8,8 @@ import * as eventActions from '../../../redux/event/action';
 import * as appActions from '../../../redux/app/action';
 import * as donationActions from '../../../redux/donation/action';
 
+
+
 // The component we're mapping to
 import DashboardView from './DashboardView';
 
@@ -23,7 +25,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     loadCurrentEvent:eventActions.loadCurrentEvent,
     updateAppLiveInfo:appActions.updateAppLiveInfo,
-    updateSelfDonations:donationActions.updateSelfDonations
+    updateSelfDonations:donationActions.updateSelfDonations,
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardView);
