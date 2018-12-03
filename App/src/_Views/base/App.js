@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import '../styles/css/theme.min.css';
+import { messaging } from '../../constants/firebase';
 import PropTypes from "prop-types";
 import { Container, Row, Col, Collapse, Nav, Navbar, NavItem, NavLink, NavbarBrand, NavbarToggler } from 'reactstrap';
 import { Dimmer, Loader, Image, Segment, Menu, Icon, Label, Button } from 'semantic-ui-react';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 //Actions
 import * as authActions from '../../redux/auth/action';
-import * as commonFunctions from '../../common';
+
 
 import imgLogo from '../styles/img/logo.jpg';
 
@@ -19,6 +21,7 @@ class App extends Component {
   constructor(props) {
     super();
     this.toggle = this.toggle.bind(this);
+   
     this.state = {
       activeItem: "",
       isOpen: false
@@ -29,9 +32,41 @@ class App extends Component {
     router: PropTypes.object,
 
   };
-  componentDidMount = async () => {
+
+  componentWillMount = async () => {
     await this.props.authCheck();
-    await commonFunctions.OnMessageListner();
+
+  }
+
+  componentDidMount = async () => {
+    try {
+    if (messaging!==null) {
+      messaging.onMessage(function (payload) {
+        //  console.log("Message received . ", payload);
+        var result = payload['notification'];
+        /*console.log("Message received . ", result);
+        let myColor = { background: '#8B0000', text: "#FFFFFF" };
+        notify.show(result['body'], "custom", 10000, myColor);*/
+        NotificationManager.info(result.title,result.body, 5000);
+
+      });
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('../firebase-messaging-sw.js')
+          .then(function (registration) {
+            messaging.useServiceWorker(registration);
+          }).catch(function (err) {
+            console.log('Service worker registration failed, error:', err);
+          });
+      }
+
+    } 
+
+      
+    } catch (error) {
+      console.log(`error in App message setup`)
+    }
+
   }
 
 
@@ -56,7 +91,7 @@ class App extends Component {
       this.context.router.history.push(`/`);
     } else if (name === 'Donation') {
       this.context.router.history.push(`/donations`);
-    }else if (name === 'Notification') {
+    } else if (name === 'Notification') {
       this.context.router.history.push(`/notifications`);
     }
 
@@ -68,6 +103,11 @@ class App extends Component {
 
     return (
       <Container>
+        <Row>
+          <Col>
+          <NotificationContainer/>
+          </Col>
+        </Row>
         <Row>
           {this.props.authLoading && (
             <Col sm={12}>
@@ -135,7 +175,7 @@ class App extends Component {
                 </Label>
             </NavLink>
           </NavItem>
-          
+
 
         </Nav>
         <NavbarToggler onClick={this.toggle} />
@@ -144,7 +184,7 @@ class App extends Component {
             <NavItem onClick={(e) => this.handleItemClick("Notification")}>
               <NavLink >
                 <Label color='orange' >
-                  <Icon name='bell outline'  />{(this.props.notif_private_count + this.props.notif_topic_count)}
+                  <Icon name='bell outline' />{(this.props.notif_private_count + this.props.notif_topic_count)}
                 </Label>
               </NavLink>
             </NavItem>

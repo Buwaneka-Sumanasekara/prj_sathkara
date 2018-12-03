@@ -2,49 +2,52 @@ import { messaging,serverKey,database,topic } from '../constants/firebase';
 
 
 export async function askForPermissioToReceiveNotifications(uid) {
-  messaging.requestPermission().then(function () {
-    console.log('Notification permission granted.');
+  try {
+    if(messaging !==null){
+
     
-    messaging.getToken().then(function(currentToken) {
-      if (currentToken) {
-        console.log(`Msg Token:`);
-        console.log(currentToken)
+    messaging.requestPermission().then(function () {
+      console.log('Notification permission granted.');
+      
+      messaging.getToken().then(function(currentToken) {
+        if (currentToken) {
+          console.log(`Msg Token:`);
+          console.log(currentToken)
+  
+          updateUserToken(uid,currentToken);
+          subscribeForCommonNotifications(currentToken);
 
-        updateUserToken(uid,currentToken);
-        subscribeForCommonNotifications(currentToken);
-
-        //sendTokenToServer(currentToken);
-        //updateUIForPushEnabled(currentToken);
-      } else {
-        // Show permission request.
-        console.log('No Instance ID token available. Request permission to generate one.');
-        // Show permission UI.
-        //updateUIForPushPermissionRequired();
-        //setTokenSentToServer(false);
-      }
-    }).catch(function(err) {
-      console.log('An error occurred while retrieving token. ', err);
-     // showToken('Error retrieving Instance ID token. ', err);
-      //setTokenSentToServer(false);
+        } else {
+          // Show permission request.
+          console.log('No Instance ID token available. Request permission to generate one.');
+        }
+      }).catch(function(err) {
+        console.log('An error occurred while retrieving token. ', err);
+      });
+    }).catch(function (err) {
+      console.log('Unable to get permission to notify.', err);
     });
-
-
-  }).catch(function (err) {
-    console.log('Unable to get permission to notify.', err);
-  });
+  }
+  } catch (error) {
+    
+  }
+ 
 }
 
 
 export async function TokenChange(uid) {
-  messaging.onTokenRefresh(function() {
-    messaging.getToken().then(function(refreshedToken) {
-      console.log('Token refreshed.');
-      updateUserToken(uid,refreshedToken)
-    }).catch(function(err) {
-      console.log('Unable to retrieve refreshed token ', err);
-      
+  if(messaging!==null){
+    messaging.onTokenRefresh(function() {
+      messaging.getToken().then(function(refreshedToken) {
+        console.log('Token refreshed.');
+        updateUserToken(uid,refreshedToken)
+      }).catch(function(err) {
+        console.log('Unable to retrieve refreshed token ', err);
+        
+      });
     });
-  });
+  }
+ 
 }
 
 export async function updateUserToken(uid,token){
@@ -63,17 +66,20 @@ export async function updateUserToken(uid,token){
 }
 
 async function subscribeForCommonNotifications(token) {
-  console.log(`Subcribe Global msg to:${token}`);
-  console.log(`${serverKey}`);
-   
-  return fetch(`https://iid.googleapis.com/iid/v1/${token}/rel/topics/${topic}`, {
-      timeout: 1200 * 1000,
-      method: "POST",
-      headers: {
-          "Content-Type": "application/json",
-          "Authorization":`key=${serverKey}`
-      }
-  });
+  if(messaging!==null){
+    console.log(`Subcribe Global msg to:${token}`);
+    console.log(`${serverKey}`);
+     
+    return fetch(`https://iid.googleapis.com/iid/v1/${token}/rel/topics/${topic}`, {
+        timeout: 1200 * 1000,
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization":`key=${serverKey}`
+        }
+    });
+  }
+ 
 
 }
 

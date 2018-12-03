@@ -1,4 +1,4 @@
-# SATHKARA - APP
+# SATHKARA Team- APP
 
 [![N|Solid](https://firebasestorage.googleapis.com/v0/b/sathkara-bb902.appspot.com/o/defaults%2Frsz_3logo.png?alt=media&token=69400e45-135d-46cd-ad8f-7b5019216bcb)](https://teamsathkara.org)
 
@@ -19,7 +19,7 @@ This app requires [Node.js](https://nodejs.org/)  to run.
 Install the dependencies and devDependencies and start the server.
 
 ```sh
-$ cd [AppFolder]
+$ cd [PrjFolder]/App
 $ npm install
 $ npm start
 ```
@@ -27,22 +27,17 @@ $ npm start
 # Environment - Testing 
 To Upload firebase functions for testing enviornemnt
 ```sh
+$ cd [PrjFolder]/Firebase-tools
 $ firebase use test
 $ firebase deploy --only functions
 ```
 
 # Environment - Production
 For production environments...
-
-Build project
-
-```sh
-$ npm run-script build
-```
-
 Deploy functions only
 
 ```sh
+$ cd [PrjFolder]/Firebase-tools
 $ firebase use default
 $ firebase deploy --only functions
 ```
@@ -50,6 +45,9 @@ $ firebase deploy --only functions
 Deploy host only
 
 ```sh
+$ cd [PrjFolder]/App
+$ cd npm run-script build
+$ cd [PrjFolder]/Firebase-tools
 $ firebase use default
 $ firebase deploy --except functions
 ```

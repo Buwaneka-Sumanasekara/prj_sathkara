@@ -32,24 +32,32 @@ console.log(`System init as #${JSON.stringify(config)}#`)
 
 if (!firebase.apps.length) {
   firebase.initializeApp(config);
-  navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then((registration) => {
-      console.log(`firebase service worker registered!`)
-      firebase.messaging().useServiceWorker(registration);
-    });
-
+  
 }
 
 const auth = firebase.auth();
 const database = firebase.database();
 const storage = firebase.storage();
-const messaging = firebase.messaging();
 
-if (process.env.NODE_ENV === 'production') {
-  messaging.usePublicVapidKey("BFXAY4O1TFz7NOzz7qdzMr6f8WSLVfa0MyKCKH-DNAOI_9JOt7vOixxFUCXkS6d_BuEwoWToRG13I2EZiBJ436w");
-} else {
-  messaging.usePublicVapidKey("BL_8IFwrAbN4b0ycQ_haJ2fIRt2VSG8wiglsyOsdd4w0ZdnaOB4SenyKh7OOOn1bbAmmqDxoXsNERL_LgyQMRQA");
+let messaging=null;
+try {
+ 
+  if (firebase.messaging.isSupported()) {
+    messaging = firebase.messaging();
+    if (process.env.NODE_ENV === 'production') {
+      messaging.usePublicVapidKey("BFXAY4O1TFz7NOzz7qdzMr6f8WSLVfa0MyKCKH-DNAOI_9JOt7vOixxFUCXkS6d_BuEwoWToRG13I2EZiBJ436w");
+    } else {
+      messaging.usePublicVapidKey("BL_8IFwrAbN4b0ycQ_haJ2fIRt2VSG8wiglsyOsdd4w0ZdnaOB4SenyKh7OOOn1bbAmmqDxoXsNERL_LgyQMRQA");
+    }
+    
+  } else {
+    
+  }
+ 
+} catch (error) {
+  
 }
+
 
 
 
