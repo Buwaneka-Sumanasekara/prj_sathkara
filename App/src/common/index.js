@@ -86,6 +86,7 @@ async function subscribeForCommonNotifications(token) {
 
 export async function updateNotificationState(notif){
   if(notif !== undefined){
+    console.log(notif);
     if(notif.istopic){
       let donref = database.ref(`notifications/topics/${notif.id}`);
       let upobj = {};

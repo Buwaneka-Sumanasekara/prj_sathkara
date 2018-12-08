@@ -55,21 +55,24 @@ exports.sendNotifictionMsg = (istopic, obj) => {
 };
 function saveNotifications(istopic, uid, token, title, body, url) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (uid !== undefined) {
-            if (istopic) {
-                const obj = {};
-                obj['title'] = title;
-                obj['body'] = body;
-                obj['url'] = url;
-                obj['date'] = admin.database.ServerValue.TIMESTAMP;
-                obj['isseen'] = false;
-                const msgnRef = yield admin.database().ref(`notifications/topics`);
-                const ref = yield msgnRef.push(obj);
-                const msgkey = ref.key;
-                const msgnRef2 = yield admin.database().ref(`notifications/topics/${msgkey}`);
-                return msgnRef2.update({ id: msgkey });
-            }
-            else {
+        // console.log(`save notification(istopic:${istopic}, uid:${uid}, token:${token}, title:${title}, body:${body}, url:${url})`);
+        if (istopic) {
+            const obj = {};
+            obj['title'] = title;
+            obj['body'] = body;
+            obj['url'] = url;
+            obj['date'] = admin.database.ServerValue.TIMESTAMP;
+            obj['isseen'] = false;
+            const msgnRef = yield admin.database().ref(`notifications/topics`);
+            const ref = yield msgnRef.push(obj);
+            const msgkey = ref.key;
+            const msgnRef2 = yield admin.database().ref(`notifications/topics/${msgkey}`);
+            return msgnRef2.update({ id: msgkey });
+        }
+        else {
+            console.log(`inside user noti`);
+            if (uid !== null && uid !== undefined) {
+                console.log(`inside user noti: ${uid}`);
                 const obj = {};
                 obj['uid'] = uid;
                 obj['title'] = title;
@@ -84,9 +87,9 @@ function saveNotifications(istopic, uid, token, title, body, url) {
                 const msgnRef2 = yield admin.database().ref(`notifications/users/${uid}/${msgkey}`);
                 return msgnRef2.update({ id: msgkey });
             }
-        }
-        else {
-            return;
+            else {
+                return null;
+            }
         }
     });
 }

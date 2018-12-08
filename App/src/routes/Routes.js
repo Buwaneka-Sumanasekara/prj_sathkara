@@ -7,7 +7,8 @@ import {
   Dashboard,
   Donation,
   Terms,
-  Notifications
+  Notifications,
+  ContactUs
 } from '../_Views';
 
 
@@ -22,6 +23,8 @@ const Routes = () => (
           <Route exact path='/' component={Dashboard} />
           <Route exact path='/donations' component={Donation} />
           <Route exact path='/notifications' component={Notifications} />
+          <Route exact path='/contact-us' component={ContactUs} />
+   
           
           <Route path='/:page' component={Test} />
         </Switch>

@@ -4,8 +4,8 @@ import '../styles/css/theme.min.css';
 import { messaging } from '../../constants/firebase';
 import PropTypes from "prop-types";
 import { Container, Row, Col, Collapse, Nav, Navbar, NavItem, NavLink, NavbarBrand, NavbarToggler } from 'reactstrap';
-import { Dimmer, Loader, Image, Segment, Menu, Icon, Label, Button } from 'semantic-ui-react';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
+import { Dimmer, Loader, Image, Segment, Header, Icon, Label, Button } from 'semantic-ui-react';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 //Actions
 import * as authActions from '../../redux/auth/action';
 
@@ -21,7 +21,7 @@ class App extends Component {
   constructor(props) {
     super();
     this.toggle = this.toggle.bind(this);
-   
+
     this.state = {
       activeItem: "",
       isOpen: false
@@ -40,29 +40,29 @@ class App extends Component {
 
   componentDidMount = async () => {
     try {
-    if (messaging!==null) {
-      messaging.onMessage(function (payload) {
-        //  console.log("Message received . ", payload);
-        var result = payload['notification'];
-        /*console.log("Message received . ", result);
-        let myColor = { background: '#8B0000', text: "#FFFFFF" };
-        notify.show(result['body'], "custom", 10000, myColor);*/
-        NotificationManager.info(result.title,result.body, 5000);
+      if (messaging !== null) {
+        messaging.onMessage(function (payload) {
+          //  console.log("Message received . ", payload);
+          var result = payload['notification'];
+          /*console.log("Message received . ", result);
+          let myColor = { background: '#8B0000', text: "#FFFFFF" };
+          notify.show(result['body'], "custom", 10000, myColor);*/
+          NotificationManager.info(result.body,result.title, 5000,()=> console.log(),true);
 
-      });
+        });
 
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('../firebase-messaging-sw.js')
-          .then(function (registration) {
-            messaging.useServiceWorker(registration);
-          }).catch(function (err) {
-            console.log('Service worker registration failed, error:', err);
-          });
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('../firebase-messaging-sw.js')
+            .then(function (registration) {
+              messaging.useServiceWorker(registration);
+            }).catch(function (err) {
+              console.log('Service worker registration failed, error:', err);
+            });
+        }
+
       }
 
-    } 
 
-      
     } catch (error) {
       console.log(`error in App message setup`)
     }
@@ -93,6 +93,8 @@ class App extends Component {
       this.context.router.history.push(`/donations`);
     } else if (name === 'Notification') {
       this.context.router.history.push(`/notifications`);
+    } else if (name === 'Contactus') {
+      this.context.router.history.push(`/contact-us`);
     }
 
   }
@@ -105,7 +107,7 @@ class App extends Component {
       <Container>
         <Row>
           <Col>
-          <NotificationContainer/>
+            <NotificationContainer />
           </Col>
         </Row>
         <Row>
@@ -130,6 +132,7 @@ class App extends Component {
             <Col sm={12}>
               {this._renderMenues()}
               {this.props.children}
+              {this._renderFooter()}
             </Col>
           )}
 
@@ -143,6 +146,21 @@ class App extends Component {
     this.setState({
       isOpen: !this.state.isOpen
     });
+  }
+
+  _renderFooter = () => {
+    return (
+      
+        <Row>
+          <Col>
+          <br/>
+            <Segment clearing>
+              <p>© Team සත්කාර</p>
+            </Segment>
+          </Col>
+        </Row>
+
+    );
   }
 
   _renderMenues = () => {
@@ -172,6 +190,18 @@ class App extends Component {
                   color='red'
                 />
                 Donate Now !
+                </Label>
+            </NavLink>
+          </NavItem>
+          <NavItem onClick={(e) => this.handleItemClick("Contactus")}>
+            <NavLink >
+              <Label image color='blue' basic>
+                <Icon
+                  name={"phone"}
+                  size='large'
+                  color='blue'
+                />
+                Contact Us
                 </Label>
             </NavLink>
           </NavItem>

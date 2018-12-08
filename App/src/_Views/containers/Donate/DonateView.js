@@ -115,6 +115,9 @@ class DonateViewContainer extends Component {
 
     console.log(this.state.donation_update_file)
     this.props.uploadDonationImgOnlyAction(obj);
+    if (this.props.user.user_type === 1) {
+      this.props.LoadAllUsersDonations(this.props.liveEvent.id);
+    }
   }
 
   handleselectedFile = event => {
@@ -409,6 +412,7 @@ const eventid = req.body.eventid;
 
     return (
       <Tab.Pane attached={false}>
+       {this.renderUpdateDonationUser()}
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -431,7 +435,7 @@ const eventid = req.body.eventid;
 
             )}
 
-            {this.props.currentDonations_All_Pending !== undefined && this.props.currentDonations_All_Pending.map(function (don, i) {
+            {this.props.currentDonations_All_Pending !== undefined && this.props.currentDonations_All_Pending.length>0 && this.props.currentDonations_All_Pending.map(function (don, i) {
               let date1 = new Date(don.crdate);
               return (
                 <Table.Row key={`his${i}`}>
@@ -507,6 +511,7 @@ const eventid = req.body.eventid;
 
     return (
       <Tab.Pane attached={false}>
+             
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -519,7 +524,7 @@ const eventid = req.body.eventid;
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {this.props.currentDonations_All_changed!== undefined && this.props.currentDonations_All_changed.length === 0 && (
+            {this.props.currentDonations_All_changed!== undefined && this.props.currentDonations_All_changed.length>0 && this.props.currentDonations_All_changed.length === 0 && (
 
               <Table.Row key={`first`}>
                 <Table.Cell>{` No Payment Records Found Yet for Approve!`}</Table.Cell>
@@ -531,6 +536,7 @@ const eventid = req.body.eventid;
 
             {this.props.currentDonations_All_changed!== undefined && this.props.currentDonations_All_changed.map(function (don, i) {
               let date1 = new Date(don.crdate);
+              console.log(don)
               return (
                 <Table.Row key={`his${i}`}>
                   <Table.Cell>{date1.toLocaleString()}</Table.Cell>

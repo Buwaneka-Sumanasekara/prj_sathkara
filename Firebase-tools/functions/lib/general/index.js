@@ -29,6 +29,7 @@ const sendNotifictionMsgIn = (istopic, obj) => {
             },
             topic: 'sathkara-common-notif'
         };
+        console.log(`Send Topic notification:${JSON.stringify(message)}`);
         return admin.messaging().send(message);
     }
     else {
@@ -50,6 +51,7 @@ const sendNotifictionMsgIn = (istopic, obj) => {
             },
             token: registrationToken
         };
+        console.log(`Send User notification:${JSON.stringify(message)}`);
         return admin.messaging().send(message);
     }
 };
@@ -122,14 +124,21 @@ exports.sendDonationNotifications = functions.database.ref('/donations')
         const prvobj = Object.keys(mdsecobj).map(i => mdsecobj[i]);
         const obj = prvobj[prvobj.length - 1];
         console.log(`Donation Notif:`, obj);
-        const user = yield admin.database().ref(`user/${obj.uid}`).once("value");
-        const userobj = user.val();
-        const msgobj = {};
-        msgobj['title'] = 'Donations Alert';
-        msgobj['body'] = `${userobj.fname} donated ${obj.amount} LKR for sathkara Event! `;
-        msgobj['url'] = 'http://teamsathkara.org/donations';
-        //return commonfun.sendNotifictionMsg(true,msgobj);
-        return sendNotifictionMsgIn(true, msgobj);
+        //  const donationref = await admin.database().ref(`donations/${obj.id}`).once("value");
+        console.log(`donation id: ${obj.id}`);
+        if (obj.id === undefined) {
+            const user = yield admin.database().ref(`user/${obj.uid}`).once("value");
+            const userobj = user.val();
+            const msgobj = {};
+            msgobj['title'] = 'Donations Alert';
+            msgobj['body'] = `${userobj.fname} donated ${obj.amount} LKR for sathkara Event! `;
+            msgobj['url'] = 'http://teamsathkara.org/donations';
+            //return commonfun.sendNotifictionMsg(true,msgobj);
+            return sendNotifictionMsgIn(true, msgobj);
+        }
+        else {
+            return null;
+        }
     }
     else {
         return null;
@@ -137,22 +146,46 @@ exports.sendDonationNotifications = functions.database.ref('/donations')
 }));
 exports.sendNotificationsTopics = functions.database.ref('/notifications/topics')
     .onWrite((change, context) => {
-    // Grab the current value of what was written to the Realtime Database.
-    const snap = change.after.val();
-    const obj = Object.keys(snap).map(i => snap[i])[0];
-    console.log(`Notification Obj[Topic]:`, obj);
-    //return commonfun.sendNotifictionMsg(true,obj);
-    return sendNotifictionMsgIn(true, obj);
+    if (change.before.exists()) {
+        //const snap = change.after.val();
+        // Grab the current value of what was written to the Realtime Database.
+        const snap = change.after.val();
+        const snapinner = Object.keys(snap).map(i => snap[i]);
+        const obj = snapinner[snapinner.length - 1];
+        console.log(`Notification Obj[Topic]:`, obj);
+        if (obj.id === undefined) {
+            return sendNotifictionMsgIn(true, obj);
+        }
+        else {
+            return null;
+        }
+    }
+    else {
+        return null;
+    }
 });
 exports.sendNotificationsUsers = functions.database.ref('/notifications/users')
     .onWrite((change, context) => {
-    // Grab the current value of what was written to the Realtime Database.
-    const snap = change.after.val();
-    console.log(`Notification Objbfr:`, snap);
-    const snapinner = Object.keys(snap).map(i => snap[i])[0];
-    const obj = Object.keys(snapinner).map(i => snapinner[i])[0];
-    console.log(`Notification Obj:`, obj);
-    // return commonfun.sendNotifictionMsg(false,obj);
-    return sendNotifictionMsgIn(false, obj);
+    if (change.before.exists()) {
+        //const snap = change.after.val();
+        // Grab the current value of what was written to the Realtime Database.
+        const snap = change.after.val();
+        console.log(`Notification Objbfr:`, snap);
+        const snapinner = Object.keys(snap).map(i => snap[i]);
+        const mdsnapinner = snapinner[snapinner.length - 1];
+        const secobj = Object.keys(mdsnapinner).map(i => mdsnapinner[i]);
+        const obj = secobj[secobj.length - 1];
+        console.log(`Notification Obj:`, obj);
+        // return commonfun.sendNotifictionMsg(false,obj);
+        if (obj.id === undefined) {
+            return sendNotifictionMsgIn(false, obj);
+        }
+        else {
+            return null;
+        }
+    }
+    else {
+        return null;
+    }
 });
 //# sourceMappingURL=index.js.map

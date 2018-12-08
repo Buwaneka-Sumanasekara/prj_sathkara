@@ -50,7 +50,7 @@ export const sendNotifictionMsg = (istopic, obj) => {
 }
 
 export async function saveNotifications(istopic, uid, token, title, body, url) {
-    if (uid !== undefined) {
+       // console.log(`save notification(istopic:${istopic}, uid:${uid}, token:${token}, title:${title}, body:${body}, url:${url})`);
         if (istopic) {
             const obj = {};
             obj['title'] = title;
@@ -66,24 +66,31 @@ export async function saveNotifications(istopic, uid, token, title, body, url) {
             return msgnRef2.update({ id: msgkey });
 
         } else {
-            const obj = {};
-            obj['uid'] = uid;
-            obj['title'] = title;
-            obj['body'] = body;
-            obj['url'] = url;
-            obj['date'] = admin.database.ServerValue.TIMESTAMP
-            obj['token'] = token;
-            obj['isseen'] = false;
-            const msgnRef = await admin.database().ref(`notifications/users/${uid}`);
-            const ref = await msgnRef.push(obj);
-            const msgkey = ref.key;
+            console.log(`inside user noti`)
+            if(uid !== null && uid!== undefined){
+                console.log(`inside user noti: ${uid}`)
+                const obj = {};
+                obj['uid'] = uid;
+                obj['title'] = title;
+                obj['body'] = body;
+                obj['url'] = url;
+                obj['date'] = admin.database.ServerValue.TIMESTAMP
+                obj['token'] = token;
+                obj['isseen'] = false;
 
-            const msgnRef2 = await admin.database().ref(`notifications/users/${uid}/${msgkey}`);
-            return msgnRef2.update({ id: msgkey });
+                
+                const msgnRef = await admin.database().ref(`notifications/users/${uid}`);
+                const ref = await msgnRef.push(obj);
+                const msgkey = ref.key;
+    
+                const msgnRef2 = await admin.database().ref(`notifications/users/${uid}/${msgkey}`);
+                return msgnRef2.update({ id: msgkey });
+            }else{
+                return null;
+            }
+           
         }
-    }else{
-        return;
-    }
+    
 
 }
 

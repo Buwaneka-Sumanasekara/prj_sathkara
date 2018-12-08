@@ -52,6 +52,12 @@ class DashboardViewContainer extends Component {
           </Row>
           <Row>
             <Col sm={12} md={9}>
+            <Message>
+   
+   <p>
+   සරණක් ඇවැසි ඔවුන් හට අපි සරණක් වෙමු !
+   </p>
+ </Message>
             <Image src={CurEvent['img-banner1']} centered />
             <Message>
    

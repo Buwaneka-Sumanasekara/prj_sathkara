@@ -103,8 +103,11 @@ class NotifViewContainer extends Component {
                 <Table.Cell>{` No Messages !`}</Table.Cell>
               </Table.Row>
             )}
-            {this.props.notif_topic.map(function (notif, i) {
+            {this.props.notif_topic.map(function (notifo, i) {
+               let notif=notifo;
+               notif['istopic']=true;
               let date1 = new Date(notif.date);
+             
               return (
                 <Table.Row key={`notifG_${i}`} active={!notif.isseen}>
                   <Table.Cell>{date1.toLocaleString()}</Table.Cell>

@@ -5,6 +5,7 @@ import Dashboard from './containers/Dashboard/DashboardContainer';
 import Donation from './containers/Donate/DonateContainer';
 import Terms from './containers/Terms/TermsContainer';
 import Notifications from './containers/Notification/NotifContainer';
+import ContactUs from './containers/Contact/ContactContainer';
 
 
 export {
@@ -14,5 +15,6 @@ export {
     Dashboard,
     Donation,
     Terms,
-    Notifications
+    Notifications,
+    ContactUs
 }
