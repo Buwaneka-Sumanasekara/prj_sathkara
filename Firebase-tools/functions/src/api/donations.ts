@@ -54,31 +54,39 @@ export async function updateDonationState(req, res) {
         const uid = req.body.uid;
         const trnid = req.body.trnid;
         const donstate = req.body.donstate;
-        const token = req.body.token;
+        const tokenadmin = req.body.token;
 
         console.log(`updateDonationState Response:${JSON.stringify(req.body)} `)
 
-        if (eventid !== undefined && uid !== undefined && trnid !== undefined && token!==undefined) {
+        if (eventid !== undefined && uid !== undefined && trnid !== undefined) {
             console.log(`inside:${JSON.stringify(req.body)} `)
             const donationRef = await admin.database().ref(`donations/${eventid}/${uid}/${trnid}`);
 
             await donationRef.update({
-                "donation-state":donstate
+                "donation-state": donstate
             });
 
-            if(donstate===1){
-                console.log(`Don state:${donstate}`)
-                await commonfun.saveNotifications(false,uid,token,'Donation Approval','Thank you,Your donation has been Approved by the Admin','http://teamsathkara.org/donations');
-            }else if(donstate===2){
-                console.log(`Don state:${donstate}`)
-                await commonfun.saveNotifications(false,uid,token,'Donation Cancel','Your donation has been cancelled by the Admin','http://teamsathkara.org/donations');
-            }else if(donstate===0){
-                console.log(`Don state:${donstate}`)
-                await commonfun.saveNotifications(false,uid,token,'Donation Reset','Your donation has been reseted by the Admin','http://teamsathkara.org/donations');
-            }else{
-                console.log(`exc Don state:${donstate}`)
+            await commonfun.saveNotifications(false, uid, tokenadmin, 'Donation Approval', 'Donation state has been Updated!', 'http://teamsathkara.org/donations');
+               
+
+            const notifObj = await admin.database().ref(`user-notif-tokens/${uid}`).once("value");
+            const notiftoken=notifObj.val();
+            if (notiftoken!==null && notiftoken.token!==null && notiftoken.token!==undefined) {
+                const token=notiftoken.token;
+                if (donstate === 1) {
+                    console.log(`Don state:${donstate}`)
+                    await commonfun.saveNotifications(false, uid, token, 'Donation Approval', 'Thank you,Your donation has been Approved by the Admin', 'http://teamsathkara.org/donations');
+                } else if (donstate === 2) {
+                    console.log(`Don state:${donstate}`)
+                    await commonfun.saveNotifications(false, uid, token, 'Donation Cancel', 'Your donation has been cancelled by the Admin', 'http://teamsathkara.org/donations');
+                } else if (donstate === 0) {
+                    console.log(`Don state:${donstate}`)
+                    await commonfun.saveNotifications(false, uid, token, 'Donation Reset', 'Your donation has been reseted by the Admin', 'http://teamsathkara.org/donations');
+                } else {
+                    console.log(`exc Don state:${donstate}`)
+                }
             }
-          
+
             const resObj = {};
             resObj['msg'] = 'State changed Success!';
             res.status(200).send(resObj);

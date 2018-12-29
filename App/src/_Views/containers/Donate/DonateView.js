@@ -134,7 +134,7 @@ class DonateViewContainer extends Component {
   }
 
 
-  updateDonationStateUI = async(donid, state) => {
+  updateDonationStateUI = async(donid, state,uid) => {
 /*
 const eventid = req.body.eventid;
         const uid = req.body.uid;
@@ -145,7 +145,7 @@ const eventid = req.body.eventid;
 
       let obj={};
       obj['eventid']=this.props.liveEvent.id;
-      obj['uid']=this.props.uid;
+      obj['uid']=uid;
       obj['trnid']=donid;
       obj['donstate']=state;
       obj['token']=this.props.notif_token;
@@ -485,13 +485,13 @@ const eventid = req.body.eventid;
                   <Table.Cell warning>
                     {(don['donation-state'] === 0) && (
                       <Segment>
-                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1) }} color='green'>Approve</Button>
-                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2) }} color='red'>Cancel</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1,don.user.id) }} color='green'>Approve</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2,don.user.id) }} color='red'>Cancel</Button>
                       </Segment>
 
                     )}
                     {(don['donation-state'] === 1 || don['donation-state'] === 2) && (
-                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0) }} color='orange'>Reset</Button>
+                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0,don.user.id) }} color='orange'>Reset</Button>
                     )}
                   </Table.Cell>
                 </Table.Row>
