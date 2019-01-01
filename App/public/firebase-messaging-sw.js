@@ -14,7 +14,7 @@ const devConfig = {
 
 };
 
-const config=prodConfig;
+const config=devConfig;
 firebase.initializeApp(config);
 
 

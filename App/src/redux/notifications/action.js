@@ -3,11 +3,16 @@ import { database } from '../../constants/firebase';
 
 export function updateNotificationToken(uid) {
   return async dispatch => {
-    let tokenref = database.ref(`user-notif-tokens/${uid}`);
+    try {
+      let tokenref = database.ref(`user-notif-tokens/${uid}`);
     const tokenr= await tokenref.once("value");
    let tokenobj= tokenr.val();
     console.log(`Update token redux:${tokenobj.token}`)
     dispatch({ type: 'NOTIF_TOKEN_UPDATE', token: tokenobj.token });
+    } catch (error) {
+      
+    }
+    
   }
 }
 

@@ -66,8 +66,8 @@ export async function updateDonationState(req, res) {
                 "donation-state": donstate
             });
 
-            await commonfun.saveNotifications(false, uid, tokenadmin, 'Donation Approval', 'Donation state has been Updated!', 'http://teamsathkara.org/donations');
-               
+            //await commonfun.saveNotifications(false, uid, tokenadmin, 'Donation Approval', 'Donation state has been Updated!', 'http://teamsathkara.org/donations');
+             
 
             const notifObj = await admin.database().ref(`user-notif-tokens/${uid}`).once("value");
             const notiftoken=notifObj.val();

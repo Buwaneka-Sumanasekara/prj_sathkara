@@ -64,7 +64,7 @@ function updateDonationState(req, res) {
                 yield donationRef.update({
                     "donation-state": donstate
                 });
-                yield commonfun.saveNotifications(false, uid, tokenadmin, 'Donation Approval', 'Donation state has been Updated!', 'http://teamsathkara.org/donations');
+                //await commonfun.saveNotifications(false, uid, tokenadmin, 'Donation Approval', 'Donation state has been Updated!', 'http://teamsathkara.org/donations');
                 const notifObj = yield admin.database().ref(`user-notif-tokens/${uid}`).once("value");
                 const notiftoken = notifObj.val();
                 if (notiftoken !== null && notiftoken.token !== null && notiftoken.token !== undefined) {

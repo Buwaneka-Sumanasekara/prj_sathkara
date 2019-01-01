@@ -26,7 +26,9 @@ const mapStateToProps = state => ({
     uploadError:state.donation.uploadError,
     currentDonations_All_Pending:state.donation.currentDonations_All_Pending,
     currentDonations_All_changed:state.donation.currentDonations_All_changed,
-    notif_token:state.notifications.notif_token
+    notif_token:state.notifications.notif_token,
+    isAuthenticated: state.auth.isAuthenticated,
+    authLoading:state.auth.authLoading
 });
 
 // Any actions to map to the component?

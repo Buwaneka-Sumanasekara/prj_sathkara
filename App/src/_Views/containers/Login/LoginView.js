@@ -112,7 +112,8 @@ class LognViewContainer extends Component {
   }
 
   redirectToHome = () => {
-    this.context.router.history.push(`/`);
+    //this.context.router.history.push(`/`);
+    window.close();
   }
 
   validateReg = () => {

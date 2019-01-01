@@ -1,5 +1,6 @@
 
 import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import { Container, Row, Col } from 'reactstrap';
 import { Tab, Button, Form, Message, List, Image, Table, Icon, Divider, Header, Label, Segment, Modal } from 'semantic-ui-react';
 import NumberFormat from 'react-number-format';
@@ -14,6 +15,11 @@ const MSG_UPLOAD_REC_SUCCESS = 'UPLOAD_REC_S';
 const MSG_UPLOAD_REC_ERROR = 'UPLOAD_REC';
 
 class DonateViewContainer extends Component {
+
+  static contextTypes = {
+    router: PropTypes.object,
+
+  };
 
   constructor(props) {
     super();
@@ -39,19 +45,30 @@ class DonateViewContainer extends Component {
   }
 
 
+
+
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.isLoading_save === true && nextProps.isLoading_save === false) {
-      if (nextProps.saveError !== '') {
-        this._setMessage(MSG_CREATE_ERROR, nextProps.saveError, 4000);
-      } else {
-        this._setMessage(MSG_CREATE_SUCCESS, 'Success', 4000);
+    if (this.props.authLoading === true && nextProps.authLoading === false) {
+      if (nextProps.isAuthenticated === false) {
+        console.log(`Redirect to homeeee`)
+        //this.context.router.history.push(`/`);
       }
-    }
-    if (this.props.isReciptUploading === true && nextProps.isReciptUploading === false) {
-      if (nextProps.uploadError !== '') {
-        this._setMessage(MSG_UPLOAD_REC_ERROR, nextProps.uploadError, 4000);
-      } else {
-        this._setMessage(MSG_UPLOAD_REC_SUCCESS, 'Success', 4000);
+
+    } else {
+
+      if (this.props.isLoading_save === true && nextProps.isLoading_save === false) {
+        if (nextProps.saveError !== '') {
+          this._setMessage(MSG_CREATE_ERROR, nextProps.saveError, 4000);
+        } else {
+          this._setMessage(MSG_CREATE_SUCCESS, 'Success', 4000);
+        }
+      }
+      if (this.props.isReciptUploading === true && nextProps.isReciptUploading === false) {
+        if (nextProps.uploadError !== '') {
+          this._setMessage(MSG_UPLOAD_REC_ERROR, nextProps.uploadError, 4000);
+        } else {
+          this._setMessage(MSG_UPLOAD_REC_SUCCESS, 'Success', 4000);
+        }
       }
     }
     return true;
@@ -134,25 +151,25 @@ class DonateViewContainer extends Component {
   }
 
 
-  updateDonationStateUI = async(donid, state,uid) => {
-/*
-const eventid = req.body.eventid;
-        const uid = req.body.uid;
-        const trnid = req.body.trnid;
-        const donstate = req.body.donstate;
-        const token = req.body.token;
-*/
+  updateDonationStateUI = async (donid, state, uid) => {
+    /*
+    const eventid = req.body.eventid;
+            const uid = req.body.uid;
+            const trnid = req.body.trnid;
+            const donstate = req.body.donstate;
+            const token = req.body.token;
+    */
 
-      let obj={};
-      obj['eventid']=this.props.liveEvent.id;
-      obj['uid']=uid;
-      obj['trnid']=donid;
-      obj['donstate']=state;
-      obj['token']=this.props.notif_token;
-      await this.props.updateDonationState(obj);    
-      if (this.props.user.user_type === 1) {
-        this.props.LoadAllUsersDonations(this.props.liveEvent.id);
-      }
+    let obj = {};
+    obj['eventid'] = this.props.liveEvent.id;
+    obj['uid'] = uid;
+    obj['trnid'] = donid;
+    obj['donstate'] = state;
+    obj['token'] = this.props.notif_token;
+    await this.props.updateDonationState(obj);
+    if (this.props.user.user_type === 1) {
+      this.props.LoadAllUsersDonations(this.props.liveEvent.id);
+    }
   }
 
   render = () => {
@@ -399,7 +416,7 @@ const eventid = req.body.eventid;
         </Modal.Content>
         <Modal.Actions>
           <Button color='red' onClick={() => this.hideUploadModal()}>
-             cancel
+            cancel
       </Button>
 
         </Modal.Actions>
@@ -412,7 +429,7 @@ const eventid = req.body.eventid;
 
     return (
       <Tab.Pane attached={false}>
-       {this.renderUpdateDonationUser()}
+        {this.renderUpdateDonationUser()}
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -435,7 +452,7 @@ const eventid = req.body.eventid;
 
             )}
 
-            {this.props.currentDonations_All_Pending !== undefined && this.props.currentDonations_All_Pending.length>0 && this.props.currentDonations_All_Pending.map(function (don, i) {
+            {this.props.currentDonations_All_Pending !== undefined && this.props.currentDonations_All_Pending.length > 0 && this.props.currentDonations_All_Pending.map(function (don, i) {
               let date1 = new Date(don.crdate);
               return (
                 <Table.Row key={`his${i}`}>
@@ -485,13 +502,13 @@ const eventid = req.body.eventid;
                   <Table.Cell warning>
                     {(don['donation-state'] === 0) && (
                       <Segment>
-                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1,don.user.id) }} color='green'>Approve</Button>
-                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2,don.user.id) }} color='red'>Cancel</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1, don.uid) }} color='green'>Approve</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2, don.uid) }} color='red'>Cancel</Button>
                       </Segment>
 
                     )}
                     {(don['donation-state'] === 1 || don['donation-state'] === 2) && (
-                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0,don.user.id) }} color='orange'>Reset</Button>
+                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0, don.uid) }} color='orange'>Reset</Button>
                     )}
                   </Table.Cell>
                 </Table.Row>
@@ -511,7 +528,7 @@ const eventid = req.body.eventid;
 
     return (
       <Tab.Pane attached={false}>
-             
+
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -524,7 +541,7 @@ const eventid = req.body.eventid;
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {this.props.currentDonations_All_changed!== undefined && this.props.currentDonations_All_changed.length>0 && this.props.currentDonations_All_changed.length === 0 && (
+            {this.props.currentDonations_All_changed !== undefined && this.props.currentDonations_All_changed.length > 0 && this.props.currentDonations_All_changed.length === 0 && (
 
               <Table.Row key={`first`}>
                 <Table.Cell>{` No Payment Records Found Yet for Approve!`}</Table.Cell>
@@ -534,7 +551,7 @@ const eventid = req.body.eventid;
 
             )}
 
-            {this.props.currentDonations_All_changed!== undefined && this.props.currentDonations_All_changed.map(function (don, i) {
+            {this.props.currentDonations_All_changed !== undefined && this.props.currentDonations_All_changed.map(function (don, i) {
               let date1 = new Date(don.crdate);
               console.log(don)
               return (
@@ -585,13 +602,13 @@ const eventid = req.body.eventid;
                   <Table.Cell warning>
                     {(don['donation-state'] === 0) && (
                       <Segment>
-                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1) }} color='green'>Approve</Button>
-                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2) }} color='red'>Cancel</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 1, don.uid) }} color='green'>Approve</Button>
+                        <Button onClick={() => { this.updateDonationStateUI(don.id, 2, don.uid) }} color='red'>Cancel</Button>
                       </Segment>
 
                     )}
                     {(don['donation-state'] === 1 || don['donation-state'] === 2) && (
-                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0) }} color='orange'>Reset</Button>
+                      <Button onClick={() => { this.updateDonationStateUI(don.id, 0, don.uid) }} color='orange'>Reset</Button>
                     )}
                   </Table.Cell>
                 </Table.Row>
