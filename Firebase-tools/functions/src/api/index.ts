@@ -5,6 +5,7 @@ import * as cors from "cors";
 
 import * as donationApi from './donations';
 import * as notificationApi from './notifications';
+import * as emailApi from './mails';
 
 
 const app = express();

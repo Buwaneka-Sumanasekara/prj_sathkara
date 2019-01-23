@@ -18,7 +18,8 @@ const mapStateToProps = state => ({
     uid:state.auth.user.id,
     liveEvent:state.event.liveEvent,
     liveinfo:state.app.liveinfo,
-    currentdonation:state.donation.currentdonation
+    currentdonation:state.donation.currentdonation,
+    isAuthenticated: state.auth.isAuthenticated
 });
 
 // Any actions to map to the component?

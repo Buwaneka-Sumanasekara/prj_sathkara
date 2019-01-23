@@ -31,8 +31,35 @@ class DashboardViewContainer extends Component {
     return true;
   }
 
+  _openLogin = () => {
+    let w=1000;
+    let h=800;
+
+    // Fixes dual-screen position                         Most browsers      Firefox
+    var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : window.screenX;
+    var dualScreenTop = window.screenTop != undefined ? window.screenTop : window.screenY;
+
+    var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : 1024;
+    var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : 700;
+
+    var systemZoom = width / 700;
+    var left = (width - w) / 2 / systemZoom + dualScreenLeft
+    var top = (height - h) / 2 / systemZoom + dualScreenTop
+    var newWindow = window.open('/Auth/Login', 'Login', 'scrollbars=yes, width=' + w / systemZoom + ', height=' + h / systemZoom + ', top=' + top + ', left=' + left);
+
+    // Puts focus on the newWindow
+    if (window.focus) newWindow.focus();
+   // window.open('/Auth/Login', 'Login', 'toolbar=0,status=0,width=548,height=325');
+  }
+
+
   handleDonationPress = () => {
-    this.context.router.history.push(`/donations`);
+    if(this.props.isAuthenticated){
+      this.context.router.history.push(`/donations`);
+    }else{
+      this._openLogin();
+    }
+    
   }
 
 
@@ -138,7 +165,7 @@ class DashboardViewContainer extends Component {
           </Table.Row>
           <Table.Row>
             <Table.Cell >
-              Recived
+              Received
 </Table.Cell>
             <Table.Cell>
               <Statistic color='red' size='mini'>

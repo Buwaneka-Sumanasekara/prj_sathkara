@@ -58,7 +58,7 @@ class ContactViewContainer extends Component {
                 <List.Item >
                   <Image avatar src='https://scontent.fcmb2-1.fna.fbcdn.net/v/t1.0-1/p160x160/46744463_2221268391219426_7922833957983354880_n.jpg?_nc_cat=101&_nc_ht=scontent.fcmb2-1.fna&oh=98c9905358ef67fb92969eeb5c24f21c&oe=5CA8AF5A' />
                   <List.Content>
-                    <List.Header >Sahan</List.Header>
+                    <List.Header >Sahan Wijesekara</List.Header>
                     <List.Description>
                     <p>Email: <a href="mailto:indikasahan2010@gmail.com">indikasahan2010@gmail.com</a> </p>
                     Contact No: +94773355726
